@@ -67,9 +67,9 @@ const hideNftModel=require("../models/hideNftModel")
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-            const nfts=await nftCollectionModel.find({userId:user._id}).select("nfts -_id");
-            if(nfts.length>0){
-                const hideNft= await hideNftModel.findOne(nfts._id).select("hideNfts -_id")
+            const nfts=await nftCollectionModel.findOne({userId:user._id});
+            if(nfts){
+                const hideNft= await hideNftModel.findOne({nftCollectionId:nfts._id},{hideNfts:{$slice:-8}}).populate("nftCollectionId","hideNfts")
                 res.status(200).json({success:true,message:"Your Nfts fetched successfully",responseResult:hideNft})
             }else{
                 res.status(404).json({success:true,message:"nft not found"})

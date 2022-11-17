@@ -64,9 +64,9 @@ const pinnedNftModel=require("../models/PinnedNftModel")
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-            const nfts=await nftCollectionModel.find({userId:user._id}).select("nfts -_id");
-            if(nfts.length>0){
-                const pinnedNft= await pinnedNftModel.findOne(nfts._id).populate("nftCollectionId","pinnedNfts")
+            const nfts=await nftCollectionModel.findOne({userId:user._id})
+            if(nfts){
+                const pinnedNft= await pinnedNftModel.findOne({nftCollectionId:nfts._id},{pinnedNfts:{$slice:-8}}).populate("nftCollectionId","pinnedNfts");
                 res.status(200).json({success:true,message:"Your pinnedNfts fetched successfully",responseResult:pinnedNft})
             }else{
                 res.status(404).json({success:true,message:"pinnedNft not found"})
