@@ -5,7 +5,7 @@ const connectDB = async (DATABASE_URL) => {
     const DB_OPTIONS = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      dbName: "lazy-api",
+      dbName: "lazyNft",
     }
     await mongoose.connect(DATABASE_URL, DB_OPTIONS)
     console.log('Database Connected Successfully...')

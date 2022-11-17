@@ -34,7 +34,7 @@ const profileModel = require("../models/profileModel");
  const getAllNftCollection=async(req,res)=>{
     try{
 
-        const nfts=await  nftCollectionModel.find({$and:[{"nfts.$.status":"SHOW"},{$ne:{"nfts.status":"HIDE"}}]}).select("nfts -_id");
+        const nfts=await  nftCollectionModel.find({"nfts.status":"SHOW"}).select("nfts -_id");
         if(nfts.length>0){
             res.status(200).json({success:true,message:"Nfts fetched successfully",responseResult:nfts})
         }else{
@@ -97,8 +97,9 @@ const profileModel = require("../models/profileModel");
         }else{
             const nft= await nftCollectionModel.findOne({$and:[{userId:user._id},{"nfts.tokenAddress":tokenAddress},{"nfts.tokenId":tokenId}]}).populate("userId")
             if(nft){
-                const updateNft=  await nftCollectionModel.updateOne({$and:[{_d:nft._id},{"nfts.tokenAddress":tokenAddress},{"nfts.tokenId":tokenId}]},{$set:{"nfts.$.lazyName":lazyName,"nfts.$.lazyDiscription":lazyDescription}},{new:true});
-                res.status(200).json({success:true,message:"Nft Updated successfully",responseResult:updateNft})
+                await nftCollectionModel.updateOne({$and:[{_d:nft._id},{"nfts.tokenAddress":tokenAddress},{"nfts.tokenId":tokenId}]},{$set:{"nfts.$.lazyName":lazyName}},{new:true});
+                await nftCollectionModel.updateOne({$and:[{_d:nft._id},{"nfts.tokenAddress":tokenAddress},{"nfts.tokenId":tokenId}]},{$set:{"nfts.$.lazyDiscription":lazyDescription}},{new:true});
+                res.status(200).json({success:true,message:"Nft Updated successfully"})
                 }else{
                     res.status(404).json({success:false,message:"nft not found"})
                 }

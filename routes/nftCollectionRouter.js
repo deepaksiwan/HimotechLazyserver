@@ -10,7 +10,7 @@ const {
 const {verifyToken}=require('../middleware/auth');
 
 router.post("/addOrUpdate",verifyToken,addOrUpdateNftCollection);
-router.post("/updateNftNameOrDescription",verifyToken,updateNftNameOrDescription)
+router.put("/updateNftNameOrDescription",verifyToken,updateNftNameOrDescription)
 router.get("/getAllNft",getAllNftCollection);
 router.get("/getMyNft",verifyToken,getMyNftCollection);
 router.get("/getMyNftByTokenAddressAndTokenId",verifyToken,getMyNftByTokenAddressAndTokenId)
