@@ -9,18 +9,18 @@ const userWalletModel =require("../models/userWalletModel");
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-            const wallet= await userWalletModel.findOne({userId:user._id}).populate("userId")
+            const wallet= await userWalletModel.findOne({userId:user._id}).select("wallets").populate("userId").limit(1);
             if(wallet){
-                const check= await userWalletModel.findOne({$and:[{userId:user._id},{"wallets.networkName":networkName},{"wallets.address":address}]})
+                const check= await userWalletModel.findOne({$and:[{userId:user._id},{"wallets.networkName":networkName},{"wallets.address":address}]}).populate("userId")
                 if(check){
                     res.status(200).json({success:false,message:"This wallet already added"});
                 }else{
-                const updateWallet=  await userWalletModel.findByIdAndUpdate({_id:wallet._id},{$push:{wallets:{networkName:networkName,address:address}}},{new:true});
-                res.status(200).json({success:true,message:"Wallet Added successfully",updateWallet:updateWallet})
+                await userWalletModel.updateOne({_id:wallet._id},{$push:{wallets:req.body}});
+                res.status(200).json({success:true,message:"Wallet Added successfully"})
                 }
             }else{
-            const walletCreate= await new userWalletModel({userId:user._id,wallets:{networkName:networkName,address:address}}).save();
-            res.status(200).json({success:true,message:"Wallet created successfully",walletCreate:walletCreate})
+            await new userWalletModel({userId:user._id,wallets:req.body}).save();
+            res.status(200).json({success:true,message:"Wallet created successfully"})
             }
         }
         

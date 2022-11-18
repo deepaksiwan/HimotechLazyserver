@@ -13,7 +13,7 @@ const pinnedNftModel=require("../models/PinnedNftModel")
         }else{
             const nft= await nftCollectionModel.findOne({$and:[{userId:user._id},{"nfts.tokenAddress":tokenAddress},{"nfts.tokenId":tokenId},{"nfts.status":"SHOW"},{$ne:"HIDE"}]}).populate("userId","nfts")
             if(nft){
-                const check1= await pinnedNftModel.findOne({nftCollectionId:nft._id})
+                const check1= await pinnedNftModel.findOne({nftCollectionId:nft._id}).select("pinnedNfts").populate("nftCollectionId").limit(1);
                 if(check1){
                     const check2= await pinnedNftModel.findOne({$and:[{nftCollectionId:nft._id},{"pinnedNfts.tokenAddress":tokenAddress},{"pinnedNfts.tokenId":tokenId}]}).populate("nftCollectionId")
                     if(check2){

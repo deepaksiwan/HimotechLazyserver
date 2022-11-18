@@ -13,7 +13,7 @@ const hideNftModel=require("../models/hideNftModel")
         }else{
             const nft= await nftCollectionModel.findOne({$and:[{userId:user._id},{"nfts.tokenAddress":tokenAddress},{"nfts.tokenId":tokenId},{"nfts.status":"SHOW"},{$ne:"HIDE"}]}).populate("userId","nfts")
             if(nft){
-                const check1= await hideNftModel.findOne({nftCollectionId:nft._id}).populate("nftCollectionId")
+                const check1= await hideNftModel.findOne({nftCollectionId:nft._id}).select("hideNfts").populate("nftCollectionId").limit(1)
                 if(check1){
                     const check2= await hideNftModel.findOne({$and:[{nftCollectionId:nft._id},{"hideNfts.tokenAddress":tokenAddress},{"hideNfts.tokenId":tokenId}]}).populate("nftCollectionId")
                     if(check2){

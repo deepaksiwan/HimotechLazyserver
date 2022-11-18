@@ -10,13 +10,13 @@ const profileModel = require("../models/profileModel");
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-            const nft= await nftCollectionModel.findOne({userId:user._id}).populate("userId")
+            const nft= await nftCollectionModel.findOne({userId:user._id}).select("nfts").populate("userId").limit(1)
             if(nft){
-                const check= await nftCollectionModel.findOne({$and:[{userId:user._id},{"nfts.tokenAddress":tokenAddress},{"nfts.tokenId":tokenId}]})
+                const check= await nftCollectionModel.findOne({$and:[{userId:user._id},{"nfts.tokenAddress":tokenAddress},{"nfts.tokenId":tokenId}]}).populate("userId")
                 if(check){
                     res.status(200).json({success:false,message:"This nft already added"});
                 }else{
-                 await nftCollectionModel.findByIdAndUpdate({_id:nft._id},{$push:{nfts:req.body}},{new:true});
+                 await nftCollectionModel.findByIdAndUpdate({_id:nft._id},{$push:{nfts:req.body}});
                 res.status(200).json({success:true,message:"Nft Updated successfully"})
                 }
             }else{
@@ -39,7 +39,7 @@ const profileModel = require("../models/profileModel");
         //     $match:{"nfts.$[].status":"SHOW"},
         //     $limit:3
         // }]);
-        console.log(nfts);
+        // console.log(nfts);
         if(nfts.length>0){
             res.status(200).json({success:true,message:"Nfts fetched successfully",responseResult:nfts})
         }else{
