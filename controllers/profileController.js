@@ -96,7 +96,7 @@ const forgotPassword =async (req, res, next) => {
         else {
             const secret = user._id + process.env.JWT_SECRET_KEY;
             const token = jwt.sign({ userId: user._id }, secret, { expiresIn: '5m' })
-            var link = `http://127.0.0.1:5000/api/v1/profile/reset/${user._id}/${token}`
+            var link = `localhost:3000/reset?id=${user._id}&token=${token}`
             // console.log(link)
             // await common.sendMailing(req.body.email, subject, text)
         }
@@ -116,7 +116,7 @@ const resetPassword=async (req, res, next) => {
     try {
         const validatedBody = await Joi.validate(req.body, validationSchema);
         const { newPassword, confirmPassword } = validatedBody;
-        const{id,token}=req.params;
+        const{id,token}=req.query;
         const user = await ProfileModel.findById(id);
         const new_secret = user._id + process.env.JWT_SECRET_KEY;
         if (!user) {

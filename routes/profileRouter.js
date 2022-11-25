@@ -74,9 +74,9 @@ router.post("/signup",signup)
 router.post('/login',login);
 
 
-router.post('/forgot',forgotPassword);
+router.post('/forget',forgotPassword);
 
-router.post('/reset/:id/:token',resetPassword);
+router.post('/reset',resetPassword);
 
 
 /**
