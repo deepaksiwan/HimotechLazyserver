@@ -8,8 +8,7 @@ const swaggerJsDoc = require("swagger-jsdoc");
 const profileRouter=require("./routes/profileRouter");
 const userWalletRouter=require('./routes/userWalletRouter');
 const nftCollectionRouter=require('./routes/nftCollectionRouter');
-const hideNftRouter=require('./routes/hideNftRouter')
-const pinnedNftRouter=require('./routes/pinnedNftRouter')
+
 const app = express();
 const port = process.env.PORT;
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -34,13 +33,12 @@ connectDB(DATABASE_URL);
 app.use(express.urlencoded({ extended: true, limit: "1000mb" }));
 // JSON
 app.use(express.json({ limit: "1000mb" }));
-
+app.set('trust proxy', true)
 // Load Routes
 app.use("/api/v1/profile", profileRouter);
 app.use("/api/v1/userWallet", userWalletRouter);
 app.use("/api/v1/nftCollection",nftCollectionRouter)
-app.use("/api/v1/hideNft",hideNftRouter)
-app.use("/api/v1/pinnedNft",pinnedNftRouter)
+
 
 // swagger API Documentation start
 const options = {

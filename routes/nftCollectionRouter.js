@@ -4,17 +4,31 @@ const {
     addOrUpdateNftCollection,
     getAllNftCollection,
     getMyNftCollection,
-    getMyNftByTokenAddressAndTokenId,
     updateNftNameOrDescription,
-    getNftByTokenAddressAndTokenId
+    getNftByNftCollectionId,
+    toggleLikeNft,
+    mostLikeNft,
+    mostViewNft,
+    recentlyListedNft,
+    hideToggleNft,
+    getAllHideNft,
+    pinnedToggleNft,
+    getAllPinnedNft
 } =require('../controllers/nftCollectionController');
 const {verifyToken}=require('../middleware/auth');
 
 router.post("/addOrUpdate",verifyToken,addOrUpdateNftCollection);
 router.put("/updateNftNameOrDescription",verifyToken,updateNftNameOrDescription)
 router.get("/getAllNft",getAllNftCollection);
-router.get("/getNftByTokenAddressAndTokenId",getNftByTokenAddressAndTokenId)
+router.get("/getNftByNftCollectionId",getNftByNftCollectionId)
 router.get("/getMyNft",verifyToken,getMyNftCollection);
-router.get("/getMyNftByTokenAddressAndTokenId",verifyToken,getMyNftByTokenAddressAndTokenId)
+router.put("/toggleLike",verifyToken,toggleLikeNft)
+router.get("/mostLikeNft",mostLikeNft);
+router.get("/mostViewNft",mostViewNft);
+router.get("/recentlyListedNft",recentlyListedNft);
+router.put("/hideToggleNft",verifyToken,hideToggleNft)
+router.get("/getAllHideNft",verifyToken,getAllHideNft),
+router.put("/pinnedToggleNft",verifyToken,pinnedToggleNft);
+router.get("/getAllPinnedNft",verifyToken,getAllPinnedNft)
 
 module.exports=router

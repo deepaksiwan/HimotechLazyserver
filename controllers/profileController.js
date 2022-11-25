@@ -17,8 +17,8 @@ const signup=async (req, res, next) => {
     try {
     const validatedBody = await Joi.validate(req.body, validationSchema);
     const { email, userName,password } = validatedBody
-    console.log(validatedBody);
-    const user = await ProfileModel.findOne({ email: email})
+    // console.log(validatedBody);
+    const user = await ProfileModel.findOne({$or:[{ email: email},{userName:userName}]})
     if (user) {
         return res.json({ responseCode: responseCodes.ALREADY_EXIST, responseMessage: responseMessage.USER_ALREADY })
     }else{
@@ -145,7 +145,7 @@ const resetPassword=async (req, res, next) => {
 
 const viewProfile=async (req,res)=>{
     try{
-        const data= await ProfileModel.findOne({_id: req.userId}).select("-password -_id -__v")
+        const data= await ProfileModel.findOne({_id: req.userId}).select("-password -__v")
         if(!data){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{

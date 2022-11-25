@@ -3,18 +3,17 @@ const mongoose = require("mongoose");
 
 const NftCollectionSchema = mongoose.Schema({
   userId:{type:mongoose.Schema.Types.ObjectId,ref:"Profile"},
-  nfts:[{
   tokenAddress: {
     type: String,
-    required: [true, "Please Enter The address of the contract of the NFT"],
+    // required: [true, "Please Enter The address of the contract of the NFT"],
     },
   tokenId: {
       type: String,
-      required: [true, "Please Enter The token id of the NFT"],
+      // required: [true, "Please Enter The token id of the NFT"],
     },
   tokenOwner:{
     type: String,
-    required: [true, "Please Enter The token Owner of the NFT"],
+    // required: [true, "Please Enter The token Owner of the NFT"],
   } ,
   metadata:{
     dna:{type: String},
@@ -29,6 +28,19 @@ const NftCollectionSchema = mongoose.Schema({
     }]
 
   },
+  viewsCount: 
+    {
+    type: Number,
+    default:0
+   }
+ ,
+  likes: [
+    {
+     type: mongoose.Schema.Types.ObjectId,
+     ref: "Profile",
+    },
+  ],
+
   lazyName:{
     type: String,
     default:"",
@@ -44,9 +56,13 @@ const NftCollectionSchema = mongoose.Schema({
     type:String,
     enum:["SHOW","HIDE"],
     default:"SHOW"
+  },
+  pinnedStatus:{
+    type:String,
+    enum:["PINNED","UNPINNED"],
+    default:"UNPINNED"
   }
 
-  }],
 
 },
 { timestamps: true }
