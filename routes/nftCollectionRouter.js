@@ -13,14 +13,16 @@ const {
     hideToggleNft,
     getAllHideNft,
     pinnedToggleNft,
-    getAllPinnedNft
+    getAllPinnedNft,
+    getAllNftByUserName
 } =require('../controllers/nftCollectionController');
 const {verifyToken}=require('../middleware/auth');
 
 router.post("/addOrUpdate",verifyToken,addOrUpdateNftCollection);
 router.put("/updateNftNameOrDescription",verifyToken,updateNftNameOrDescription)
 router.get("/getAllNft",getAllNftCollection);
-router.get("/getNftByNftCollectionId",getNftByNftCollectionId)
+router.get("/getNftByNftCollectionId",getNftByNftCollectionId);
+router.get("/getAllNftByUserName",getAllNftByUserName)
 router.get("/getMyNft",verifyToken,getMyNftCollection);
 router.put("/toggleLike",verifyToken,toggleLikeNft)
 router.get("/mostLikeNft",mostLikeNft);

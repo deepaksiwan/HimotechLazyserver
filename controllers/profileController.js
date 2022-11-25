@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken")
 const responseCodes = require("../utils/responseCodes")
 const responseMessage = require("../utils/responseMessage");
 const { default: mongoose } = require('mongoose');
-// const {genrateOtp}=require("../utils/common")
+const common=require("../utils/common")
 require("dotenv").config();
 
 const signup=async (req, res, next) => {
@@ -97,13 +97,13 @@ const forgotPassword =async (req, res, next) => {
             const secret = user._id + process.env.JWT_SECRET_KEY;
             const token = jwt.sign({ userId: user._id }, secret, { expiresIn: '5m' })
             var link = `localhost:3000/reset?id=${user._id}&token=${token}`
-            // console.log(link)
-            // await common.sendMailing(req.body.email, subject, text)
+            const subject="Lazy NFT - Password Reset Link"
+            await common.sendMailing(email,subject,link);
         }
         res.send({ responseCode: responseCodes.SUCCESS, responseMessage: responseMessage.FORGOT_PASSWORD, responseResult: link })
     }
     catch (error) {
-        return res.send({ responseCode: responseCodes, responseMessage: responseMessage.SOMETHING_WRONG, responseResult: error })
+        return res.send({ responseCode: responseCodes.SOMETHING_WRONG, responseMessage: responseMessage.SOMETHING_WRONG, responseResult: error })
     }
 }
 

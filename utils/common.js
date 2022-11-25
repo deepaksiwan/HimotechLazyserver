@@ -1,4 +1,6 @@
 const nodemailer = require("nodemailer")
+const smtpTransport = require('nodemailer-smtp-transport');
+require("dotenv").config()
 // const mailgun = require("mailgun-js")
 // const cloudinairy = require("cloudinary")
 
@@ -22,19 +24,23 @@ module.exports = ({
             console.log("Image upload error")
         }
     },
-    sendMailing: async (email, subject, text) => {
+    sendMailing: async (email, subject, link) => {
         try {
-            console.log('27 ==>',email, subject, text)
-            let transporter = nodemailer.createTransport({
-                service: "gmail",
-                port: 587,
+            // console.log('27 ==>',email, subject, text)
+            let transporter = nodemailer.createTransport(smtpTransport({
+                service: "mail.wizard.financial",
+                port: 465,
                 secure: true,
                 auth: {
-                    user: "no-replymailer@mobiloitte.com",
-                    pass: "%FEy=9FF@",
+                    user: process.env.SMTP_WEBMAIL_USERNAME,
+                    pass: process.env.SMTP_WEBMAIL_PASSWORD,
 
                 },
-            })
+                tls: {
+                    // do not fail on invalid certs
+                    rejectUnauthorized: false,
+                  },
+            }))
 
             // const DOMAIN = 'sandboxe86145a2a7f44a7cb4d649ba665c77e1.mailgun.org';
             // const api_key = "0e29748ed8173e3827409209236695b5-b0ed5083-e2b0f069";
@@ -47,12 +53,11 @@ module.exports = ({
             //     text: text,
             //     // html:`http//:${req.headers.host}/verify email   `
             // };
-
             let options = {
-                from: "no-replymailer@mobiloitte.com",
+                from: ` from Lazy NFT ${process.env.SMTP_WEBMAIL_USERNAME}`,
                 to: email,
                 subject: subject,
-                text: text,
+                html:`<a href=${link}>Click Here</a> to Reset Your Password`
             }
             // let admin = {
             //     from: "no-replymailer@mobiloitte.com",
@@ -60,7 +65,13 @@ module.exports = ({
             //     subject: subject,
             //     text: text,
             // }
-            return await transporter.sendMail(options)
+            return await transporter.sendMail(options,(error,info)=>{
+                if(error){
+                    console.log(error);
+                }else{
+                    console.log(info);
+                }
+            })
             // mg.messages().send(data,function(err,res){
             //     console.log(res)
             // })

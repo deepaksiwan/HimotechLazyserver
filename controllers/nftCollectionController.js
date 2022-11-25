@@ -106,6 +106,28 @@ const profileModel = require("../models/profileModel");
  }
 
 
+ const getAllNftByUserName=async(req,res)=>{
+    try{
+        const user= await profileModel.findOne({userName: req.query.userName})
+        if(!user){
+            res.status(404).json({success:false,message:"Profile not found"})
+        }else{
+            const page=parseInt(req.query.page)||1;
+            const limit=parseInt(req.query.limit)||10;
+            const nfts=await  nftCollectionModel.find({userId:user._id,status:"SHOW"}).sort({createdAt:-1}).skip((page-1)*limit).populate("userId","-password").limit(limit);
+            if(nfts.length>0){
+                res.status(200).json({success:true,message:"Your Nfts fetched successfully",responseResult:nfts})
+            }else{
+                res.status(404).json({success:true,message:"nft not found"})
+            }
+        }
+        
+    }catch(err){
+            res.status(501).json({success:false,message:err})
+    }
+ }
+
+
 
  const updateNftNameOrDescription=async(req,res)=>{
     try{
@@ -413,5 +435,6 @@ const getAllPinnedNft=async(req,res)=>{
     hideToggleNft,
     getAllHideNft,
     pinnedToggleNft,
-    getAllPinnedNft
+    getAllPinnedNft,
+    getAllNftByUserName
 }
