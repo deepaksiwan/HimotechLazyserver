@@ -5,16 +5,20 @@ const NftCollectionSchema = mongoose.Schema({
   userId:{type:mongoose.Schema.Types.ObjectId,ref:"Profile"},
   tokenAddress: {
     type: String,
-    // required: [true, "Please Enter The address of the contract of the NFT"],
+    required: [true, "Please Enter The address of the contract of the NFT"],
     },
   tokenId: {
       type: String,
-      // required: [true, "Please Enter The token id of the NFT"],
+      required: [true, "Please Enter The token id of the NFT"],
     },
   tokenOwner:{
     type: String,
-    // required: [true, "Please Enter The token Owner of the NFT"],
+    required: [true, "Please Enter The token Owner of the NFT"],
   } ,
+  chainName:{
+    type: String,
+    required: [true, "Please Enter The chainName of the NFT"],
+  },
   metadata:{
     dna:{type: String},
     name:{type: String,trim: true,},

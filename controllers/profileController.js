@@ -168,12 +168,38 @@ const editProfile=async(req,res)=>{
     };
     try{
         const validatedBody = await Joi.validate(req.body, validationSchema)
-        const data= await ProfileModel.findOne({_id: req.userId})
-        if(!data){
+        const user= await ProfileModel.findOne({_id: req.userId})
+        if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-            const updateData= await ProfileModel.findByIdAndUpdate({_id: data._id},validatedBody,{new:true}).select("-password")
-            res.status(200).json({success:true,message:"updated successfully",data:updateData,})
+            const {bio,twitterName,facebookName,personalURL}=validatedBody;
+            if(!bio && !twitterName && !facebookName &&  !personalURL){
+                res.status(501).json({success:false,message:"No any updated data field"});
+            }else{
+                let updateData;
+                if(bio && twitterName && facebookName &&  personalURL){
+                    updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},validatedBody,{new:true}).select("-password")
+                }else{
+                    if(bio){
+                        updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},{$set:{bio:bio}},{new:true}).select("-password")
+                    }
+                    if(twitterName){
+                        updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},{$set:{twitterName:twitterName}},{new:true}).select("-password")
+                    }
+                    if(facebookName){
+                        updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},{$set:{facebookName:facebookName}},{new:true}).select("-password")
+                    }if (personalURL) {
+                        updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},{$set:{personalURL:personalURL}},{new:true}).select("-password")
+                    }
+                }
+    
+                if(updateData){
+                    res.status(200).json({success:true,message:"updated successfully",data:updateData})
+                }else{
+                    res.status(501).json({success:false,message:"something went wrong"})
+                }
+            }
+   
         }
         
     }catch(err){

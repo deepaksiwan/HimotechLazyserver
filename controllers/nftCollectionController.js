@@ -66,6 +66,24 @@ const profileModel = require("../models/profileModel");
     }
  }
 
+ const getAllNftByChainName=async(req,res)=>{
+    try{
+        const page=parseInt(req.query.page)||1;
+        const limit=parseInt(req.query.limit)||6;
+        const nfts=await  nftCollectionModel.find({chainName:req.query.chainName,status:"SHOW"}).sort({createdAt:-1}).skip((page-1)*limit).populate("userId","-password").limit(limit);
+
+        if(nfts.length>0){
+            res.status(200).json({success:true,message:"Nfts fetched successfully",responseResult:nfts})
+        }else{
+            res.status(404).json({success:true,message:"nft not found"})
+        }
+        
+    }catch(err){
+            res.status(501).json({success:false,message:err})
+    }
+ }
+
+
 
  const getMyNftCollection=async (req,res)=>{
     try{
@@ -76,6 +94,27 @@ const profileModel = require("../models/profileModel");
             const page=parseInt(req.query.page)||1;
             const limit=parseInt(req.query.limit)||6;
             const nfts=await  nftCollectionModel.find({userId:req.userId,status:"SHOW"}).sort({createdAt:-1}).skip((page-1)*limit).populate("userId","-password").limit(limit);
+            if(nfts.length>0){
+                res.status(200).json({success:true,message:"Your Nfts fetched successfully",responseResult:nfts})
+            }else{
+                res.status(404).json({success:true,message:"nft not found"})
+            }
+        }
+        
+    }catch(err){
+            res.status(501).json({success:false,message:err})
+    }
+ }
+
+ const getNftCollectionByChainNameAndUserName=async(req,res)=>{
+    try{
+        const user= await profileModel.findOne({userName: req.query.userName})
+        if(!user){
+            res.status(404).json({success:false,message:"Profile not found"})
+        }else{
+            const page=parseInt(req.query.page)||1;
+            const limit=parseInt(req.query.limit)||6;
+            const nfts=await  nftCollectionModel.find({userId:user._id,chainName:req.query.chainName,status:"SHOW"}).sort({createdAt:-1}).skip((page-1)*limit).populate("userId","-password").limit(limit);
             if(nfts.length>0){
                 res.status(200).json({success:true,message:"Your Nfts fetched successfully",responseResult:nfts})
             }else{
@@ -136,13 +175,22 @@ const profileModel = require("../models/profileModel");
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-                const updateData=await nftCollectionModel.findByIdAndUpdate({_id:req.query.id},{$set:{lazyName:lazyName,lazyDescription:lazyDescription}},{new:true});
-                if(updateData){
+               let updateData
+                if(lazyName && lazyDescription){
+                     updateData=await nftCollectionModel.findOneAndUpdate({_id:req.query.id},{$set:req.body},{new:true});
 
+                }else if(lazyName || !lazyDescription){
+                    updateData=await nftCollectionModel.findOneAndUpdate({_id:req.query.id},{$set:{lazyName:lazyName}},{new:true});
+                }else{
+                    updateData=await nftCollectionModel.findOneAndUpdate({_id:req.query.id},{$set:{lazyDescription:lazyDescription}},{new:true});
+                }
+                if(updateData){
+    
                     res.status(200).json({success:true,message:"Nft Updated successfully",responseResult:updateData})
                 }else{
                     res.status(404).json({success:false,message:"nft not found"})
                 }
+
             
         }
         
@@ -214,7 +262,9 @@ const mostLikeNft=async(req,res)=>{
     // 2nd Method using aggregate
     const limit=parseInt(req.query.limit) || 10
     try {
-        nftCollectionModel.aggregate([{
+        nftCollectionModel.aggregate([
+            {$match:{status:"SHOW"}},
+            {
             "$sort":{"likes":-1}
         },
         {
@@ -265,7 +315,9 @@ const mostViewNft=async(req,res)=>{
     // 2nd Method using aggregate
     const limit=parseInt(req.query.limit) || 10
     try {
-        nftCollectionModel.aggregate([{
+        nftCollectionModel.aggregate([
+            {$match:{status:"SHOW"}},
+            {
             "$sort":{"viewsCount":-1}
         },
         {
@@ -291,9 +343,11 @@ const mostViewNft=async(req,res)=>{
 }
 
 const recentlyListedNft=async(req,res)=>{
-    const limit=parseInt(req.query.limit) || 6
+    const limit=parseInt(req.query.limit) || 9
     try {
-        nftCollectionModel.aggregate([{
+        nftCollectionModel.aggregate([
+            {$match:{status:"SHOW"}},
+            {
             "$sort":{"createdAt":-1}
         },
         {
@@ -356,7 +410,7 @@ const getAllHideNft=async(req,res)=>{
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
             const page=parseInt(req.query.page)||1;
-            const limit=parseInt(req.query.limit)||6;
+            const limit=parseInt(req.query.limit)||10;
             const nfts=await  nftCollectionModel.find({userId:req.userId,status:"HIDE"}).sort({createdAt:-1}).skip((page-1)*limit).populate("userId","-password -_id").limit(limit);
             console.log(nfts);
             if(nfts.length>0){
@@ -400,16 +454,15 @@ const pinnedToggleNft=async(req,res)=>{
     }
 }
 
-const getAllPinnedNft=async(req,res)=>{
+const getAllPinnedNftByUserName=async(req,res)=>{
     try{
-        const user= await profileModel.findOne({_id: req.userId})
+        const user= await profileModel.findOne({userName: req.query.userName})
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
             const page=parseInt(req.query.page)||1;
-            const limit=parseInt(req.query.limit)||6;
-            const nfts=await  nftCollectionModel.find({userId:req.userId,pinnedStatus:"PINNED"}).sort({createdAt:-1}).skip((page-1)*limit).populate("userId","-password -_id").limit(limit);
-            console.log(nfts);
+            const limit=parseInt(req.query.limit)||10;
+            const nfts=await  nftCollectionModel.find({userId:user._id,status:"SHOW",pinnedStatus:"PINNED"}).sort({createdAt:-1}).skip((page-1)*limit).populate("userId","-password").limit(limit);
             if(nfts.length>0){
                 res.status(200).json({success:true,message:"Your Nfts fetched successfully",responseResult:nfts})
             }else{
@@ -425,9 +478,11 @@ const getAllPinnedNft=async(req,res)=>{
  module.exports={
     addOrUpdateNftCollection,
     getAllNftCollection,
+    getAllNftByChainName,
     getMyNftCollection,
     updateNftNameOrDescription,
     getNftByNftCollectionId,
+    getNftCollectionByChainNameAndUserName,
     toggleLikeNft,
     mostLikeNft,
     mostViewNft,
@@ -435,6 +490,6 @@ const getAllPinnedNft=async(req,res)=>{
     hideToggleNft,
     getAllHideNft,
     pinnedToggleNft,
-    getAllPinnedNft,
+    getAllPinnedNftByUserName,
     getAllNftByUserName
 }
