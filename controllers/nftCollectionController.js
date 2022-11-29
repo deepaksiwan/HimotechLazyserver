@@ -23,6 +23,10 @@ const profileModel = require("../models/profileModel");
 //     return xForwardedForIP || xRealIP || sockRemoteAddress || conRemoteAddress ||req?.ip || req.connection.socket.remoteAddress
 //   }
 
+
+// get all user
+// get all wallet and network of user hrough loop
+// 
   
 
  const addOrUpdateNftCollection=async (req,res)=>{
