@@ -155,9 +155,9 @@ const profileModel = require("../models/profileModel");
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-            const page=parseInt(req.query.page)||1;
-            const limit=parseInt(req.query.limit)||10;
-            const nfts=await  nftCollectionModel.find({userId:user._id,status:"SHOW"}).sort({createdAt:-1}).skip((page-1)*limit).populate("userId","-password").limit(limit);
+            // const page=parseInt(req.query.page)||1;
+            // const limit=parseInt(req.query.limit)||10;
+            const nfts=await  nftCollectionModel.find({userId:user._id,status:"SHOW"}).sort({createdAt:-1}).populate("userId","-password");
             if(nfts.length>0){
                 res.status(200).json({success:true,message:"Your Nfts fetched successfully",responseResult:nfts})
             }else{

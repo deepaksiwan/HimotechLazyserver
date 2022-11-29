@@ -19,7 +19,7 @@ const profileSchema = mongoose.Schema({
   profilePic: {
     type:String,
     required:true,
-    default:"https://lh3.googleusercontent.com/rRuk-xtEg28mkFYfLAnClC-UNrCGc2mPqvA_72fcUFM-zy6XTNkuFs9uWG8klzkRCyQRkDdmc-5AAqG-9EY-D4R1W865MhJnA6TFGg"
+    default:"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png"
   },
   bio: {
     type: String,
