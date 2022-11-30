@@ -6,6 +6,7 @@ const ethers=require("ethers");
 const {WOLFPUPS_NFT_address,WOLFPUPS_NFT_address_BSC}=require('../utils/config');
 const WOLFPUPS_NFT_ABI=require("../utils/WOLFPUPS_NFT_ABI.json")
 const provider = new ethers.providers.WebSocketProvider("wss://mainnet.infura.io/ws/v3/2f2312e7890d42f5b0ba6e29ef50674d")
+const bscprovider = new ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s3.binance.org:8545")
 
 
 const getContract=(contractAddress,contractAbi,signerOrProvider)=>{
@@ -44,35 +45,57 @@ const getContract=(contractAddress,contractAbi,signerOrProvider)=>{
 // save meta data after checking of entry if already exist then update. (token address , id, wallet and network)
   
 const addOrUpdateNftCollection=async ()=>{
+    // console.log("hi");
+
     try{
         const users= await profileModel.find().select("_id");
+        // console.log(users);
+
         if(users.length<=0){
             console.log("No any user Added Yet");
         }else{
             const userDetail=await Promise.all(users?.map(async (user)=>{
-                const wallets=await userWalletModel.find({userId:user._id}).populate("userId");
-                checkNft=await Promise.all(wallets?.map(async(wallet)=>{
-                    for(let i=0;i<wallet.wallets.length;i++){
-                        if(wallet?.wallets[i].networkName==="BSC Testnet"){
+                const userWallets=await userWalletModel.find({userId:user._id}).populate("userId");
+                // console.log(userWallets);
+                checkNft=await Promise.all(userWallets?.map(async(wallets)=>{
+                    // console.log(wallets);
+
+                    // console.log(wallets);
+                    for(let i=0;i< wallets.wallets.length;i++){
+                        // console.log(wallets[i]);
+                        let _wallet = wallets?.wallets[i] ; 
+                        if(_wallet.networkName === "BSC Testnet"){
                             // console.log(wallet?.wallets[i].address);
-                            const contract= getContract(WOLFPUPS_NFT_address_BSC,WOLFPUPS_NFT_ABI,provider);
+                            const contract= getContract(WOLFPUPS_NFT_address_BSC,WOLFPUPS_NFT_ABI,bscprovider);
                             // console.log(contract);
-                            const balanceOf= await contract.balanceOf("0xA9724b3F7bF45743eaAE0D66ef41706611781ACa");
-                            console.log(balanceOf,"ggg");
+                            const balanceOf= await contract.balanceOf(_wallet.address);
+                            // console.log(balanceOf.toString(),"ggg");
+
+                              for(let j =0 ;j < balanceOf;j++){
+                                const tokenId = await contract.tokenOfOwnerByIndex(_wallet.address,j);
+                                const tokenUri = await contract.tokenURI(tokenId);
+                                const metadata = await getUserNFTByTokenURI(tokenUri);
+                                // entry in db
+
+
+
+                              }
+
                         }
-                        if(wallet?.wallets[i].networkName==="Ethereum"){
+                        if(_wallet.networkName==="Ethereum"){
                             // console.log(wallet?.wallets[i].networkName);
                         }
                     }
-                    const nft= await nftCollectionModel.find({$and:[{userId:wallet?.userId._id},{tokenAddress:"0xcd2865f888a764daebf79c765361233d58c679a2"},{tokenId:104}]}).populate("userId")
-                    if(nft.length>0){
+
+                    // const nft= await nftCollectionModel.find({$and:[{userId:wallet?.userId._id},{tokenAddress:"0xcd2865f888a764daebf79c765361233d58c679a2"},{tokenId:104}]}).populate("userId")
+                    // if(nft.length>0){
  
                         // console.log("This nft already added",nft.length);
-                   }else{
+                //    }else{
                     // console.log(nft);
                     // await new nftCollectionModel({userId:wallet?.userId._id}).save();
                     
-                  }
+                //   }
                     
                 }))
             }))
