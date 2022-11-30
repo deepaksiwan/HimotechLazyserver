@@ -1,6 +1,17 @@
 const { default: mongoose } = require("mongoose");
 const nftCollectionModel = require("../models/NftCollectionModel");
 const profileModel = require("../models/profileModel");
+const userWalletModel =require("../models/userWalletModel")
+const ethers=require("ethers");
+const {WOLFPUPS_NFT_address,WOLFPUPS_NFT_address_BSC}=require('../utils/config');
+const WOLFPUPS_NFT_ABI=require("../utils/WOLFPUPS_NFT_ABI.json")
+const provider = new ethers.providers.WebSocketProvider("wss://mainnet.infura.io/ws/v3/2f2312e7890d42f5b0ba6e29ef50674d")
+
+
+const getContract=(contractAddress,contractAbi,signerOrProvider)=>{
+    const contract = new ethers.Contract(contractAddress, contractAbi, signerOrProvider);
+    return contract;
+}
 
 // function getIP(req) {
 //     // req.connection is deprecated
@@ -25,32 +36,78 @@ const profileModel = require("../models/profileModel");
 
 
 // get all user
-// get all wallet and network of user hrough loop
-// 
+// loop thorugh user result and get all wallet and network of user 
+// loop through each wallet and initialize contract based on network of wallet.
+// get balance of wallet from contract
+// user tokenOwnerIndex to get token Ids
+// for each token id get metadata using tokenUri
+// save meta data after checking of entry if already exist then update. (token address , id, wallet and network)
   
-
- const addOrUpdateNftCollection=async (req,res)=>{
+const addOrUpdateNftCollection=async ()=>{
     try{
-        const user= await profileModel.findOne({_id: req.userId})
-        const {tokenAddress,tokenId}=req.body
-        if(!user){
-            res.status(404).json({success:false,message:"Profile not found"})
+        const users= await profileModel.find().select("_id");
+        if(users.length<=0){
+            console.log("No any user Added Yet");
         }else{
-            const nft= await nftCollectionModel.find({$and:[{userId:req.userId},{tokenAddress:tokenAddress},{tokenId:tokenId}]}).populate("userId")
-            if(nft.length>0){
+            const userDetail=await Promise.all(users?.map(async (user)=>{
+                const wallets=await userWalletModel.find({userId:user._id}).populate("userId");
+                checkNft=await Promise.all(wallets?.map(async(wallet)=>{
+                    for(let i=0;i<wallet.wallets.length;i++){
+                        if(wallet?.wallets[i].networkName==="BSC Testnet"){
+                            // console.log(wallet?.wallets[i].address);
+                            const contract= getContract(WOLFPUPS_NFT_address_BSC,WOLFPUPS_NFT_ABI,provider);
+                            // console.log(contract);
+                            const balanceOf= await contract.balanceOf("0xA9724b3F7bF45743eaAE0D66ef41706611781ACa");
+                            console.log(balanceOf,"ggg");
+                        }
+                        if(wallet?.wallets[i].networkName==="Ethereum"){
+                            // console.log(wallet?.wallets[i].networkName);
+                        }
+                    }
+                    const nft= await nftCollectionModel.find({$and:[{userId:wallet?.userId._id},{tokenAddress:"0xcd2865f888a764daebf79c765361233d58c679a2"},{tokenId:104}]}).populate("userId")
+                    if(nft.length>0){
  
-                    res.status(200).json({success:false,message:"This nft already added"});
-            }else{
-                await new nftCollectionModel({userId:req.userId,...req.body}).save();
-                res.status(200).json({success:true,message:"Nft Added successfully"})
-            }
+                        // console.log("This nft already added",nft.length);
+                   }else{
+                    // console.log(nft);
+                    // await new nftCollectionModel({userId:wallet?.userId._id}).save();
+                    
+                  }
+                    
+                }))
+            }))
+
         }
         
     }catch(err){
-            res.status(501).json({success:false,message:err})
+            console.log(err);
     }
-
  }
+
+//  addOrUpdateNftCollection()
+
+//  const addOrUpdateNftCollection=async (req,res)=>{
+//     try{
+//         const user= await profileModel.findOne({_id: req.userId})
+//         const {tokenAddress,tokenId}=req.body
+//         if(!user){
+//             res.status(404).json({success:false,message:"Profile not found"})
+//         }else{
+//             const nft= await nftCollectionModel.find({$and:[{userId:req.userId},{tokenAddress:tokenAddress},{tokenId:tokenId}]}).populate("userId")
+//             if(nft.length>0){
+ 
+//                     res.status(200).json({success:false,message:"This nft already added"});
+//             }else{
+//                 await new nftCollectionModel({userId:req.userId,...req.body}).save();
+//                 res.status(200).json({success:true,message:"Nft Added successfully"})
+//             }
+//         }
+        
+//     }catch(err){
+//             res.status(501).json({success:false,message:err})
+//     }
+
+//  }
 
  const getAllNftCollection=async(req,res)=>{
     try{
