@@ -74,7 +74,7 @@ const addOrUpdateNftCollection = async () => {
                                 const tokenUri = await contract.tokenURI(tokenId);
                                 // console.log(tokenUri,"tokenUri");
                                 const metadata = await getUserNFTByTokenURI(tokenUri);
-                                console.log(JSON.stringify(metadata));
+                                console.log(metadata);
                                 // entry in db
                                 const nft = await nftCollectionModel.find({ $and: [{ userId: wallets?.userId._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }] }).populate("userId")
                                 if (nft.length > 0) {
