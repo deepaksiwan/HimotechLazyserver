@@ -20,7 +20,7 @@ const {
 } =require('../controllers/nftCollectionController');
 const {verifyToken}=require('../middleware/auth');
 
-router.post("/addOrUpdate",verifyToken,addOrUpdateNftCollection);
+router.get("/addOrUpdate",addOrUpdateNftCollection);
 router.put("/updateNftNameOrDescription",verifyToken,updateNftNameOrDescription)
 router.get("/getAllNft",getAllNftCollection);
 router.get("/getAllNftByChainName",getAllNftByChainName);
