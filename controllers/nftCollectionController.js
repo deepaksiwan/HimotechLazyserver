@@ -17,9 +17,9 @@ const getContract = (contractAddress, contractAbi, signerOrProvider) => {
 
 // function getIP(req) {
 //     // req.connection is deprecated
-//     const conRemoteAddress = req.connection?.remoteAddress
+//     const conRemoteAddress = req.connection.remoteAddress
 //     // req.socket is said to replace req.connection
-//     const sockRemoteAddress = req.socket?.remoteAddress
+//     const sockRemoteAddress = req.socket.remoteAddress
 //     // some platforms use x-real-ip
 //     const xRealIP = req.headers['x-real-ip']
 //     // most proxies use x-forwarded-for
@@ -33,7 +33,7 @@ const getContract = (contractAddress, contractAbi, signerOrProvider) => {
 //       }
 //     })()
 //     // prefer x-forwarded-for and fallback to the others
-//     return xForwardedForIP || xRealIP || sockRemoteAddress || conRemoteAddress ||req?.ip || req.connection.socket.remoteAddress
+//     return xForwardedForIP || xRealIP || sockRemoteAddress || conRemoteAddress ||req.ip || req.connection.socket.remoteAddress
 //   }
 
 
@@ -81,7 +81,7 @@ const addOrUpdateNftCollection = async () => {
                         w++ ;
 
                         // console.log(wallets[i]);
-                        let _wallet = wallets?.wallets[i];
+                        let _wallet = wallets.wallets[i];
                         if (_wallet.networkName === "BSC Testnet") {
                             const contract = getContract(WOLFPUPS_NFT_address_BSC, WOLFPUPS_NFT_ABI, bscprovider);
                             // console.log(contract);
@@ -97,18 +97,18 @@ const addOrUpdateNftCollection = async () => {
                               
                                 // console.log(metadata.data);
                                 // entry in db
-                                const nft = await nftCollectionModel.find({ $and: [{ userId: wallets?.userId._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }] }).populate("userId")
+                                const nft = await nftCollectionModel.find({ $and: [{ userId: wallets.userId._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }] }).populate("userId")
                                 if (nft.length > 0) {
                                     // console.log("This nft already added");
                                 console.log("Excluded:", i);
-                                  await nftCollectionModel.findOneAndUpdate({ $and: [{ userId: wallets?.userId._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }]}, { $set: {exist:true} }, { new: true });
+                                  await nftCollectionModel.findOneAndUpdate({ $and: [{ userId: wallets.userId._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }]}, { $set: {exist:true} }, { new: true });
 
                                 } else {
                                     const tokenUri = await contract.tokenURI(tokenId);
                                     // console.log(tokenUri,"tokenUri");
                                     const metadata = await getUserNFTByTokenURI(tokenUri);
                                     const obj={
-                                        userId: wallets?.userId._id, 
+                                        userId: wallets.userId._id, 
                                         tokenAddress:WOLFPUPS_NFT_address_BSC,
                                         tokenId:tokenId,
                                         tokenOwner:_wallet.address,
@@ -141,19 +141,19 @@ const addOrUpdateNftCollection = async () => {
                                 // entry in db
                                       
                                 // console.log(metadata)
-                                const nft = await nftCollectionModel.find({ $and: [{ userId: wallets?.userId._id }, { tokenAddress: WOLFPUPS_NFT_address}, { tokenId: tokenId }] }).populate("userId")
+                                const nft = await nftCollectionModel.find({ $and: [{ userId: wallets.userId._id }, { tokenAddress: WOLFPUPS_NFT_address}, { tokenId: tokenId }] }).populate("userId")
                                 if (nft.length > 0) {
                                     // console.log("This nft already added");
                                     console.log("Excluded:", i);
 
-                                    await nftCollectionModel.findOneAndUpdate({ $and: [{ userId: wallets?.userId._id }, { tokenAddress: WOLFPUPS_NFT_address}, { tokenId: tokenId }]}, { $set: {exist:true} }, { new: true });
+                                    await nftCollectionModel.findOneAndUpdate({ $and: [{ userId: wallets.userId._id }, { tokenAddress: WOLFPUPS_NFT_address}, { tokenId: tokenId }]}, { $set: {exist:true} }, { new: true });
 
 
                                 } else {
                                     const tokenUri = await contract.tokenURI(tokenId);
                                     const metadata = await getUserNFTByTokenURI(tokenUri);
                                     const obj={
-                                        userId: wallets?.userId._id, 
+                                        userId: wallets.userId._id, 
                                         tokenAddress:WOLFPUPS_NFT_address,
                                         tokenId:tokenId,
                                         tokenOwner:_wallet.address,
