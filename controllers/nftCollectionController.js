@@ -238,7 +238,16 @@ const getAllNftByChainName = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 6;
-        const nfts = await nftCollectionModel.find({ chainName: req.query.chainName, status: "SHOW" , exist : true }).sort({ createdAt: -1 }).skip((page - 1) * limit).populate("userId", "-password").limit(limit);
+
+        let _sort = { createdAt: -1 }
+        if(req.query.filter == 2) {
+            _sort =  {"viewsCount": -1}
+
+        }
+        else if(req.query.filter == 3) {
+            _sort =  {"likes": -1}
+        }
+        const nfts = await nftCollectionModel.find({ chainName: req.query.chainName, status: "SHOW" , exist : true }).sort(_sort).skip((page - 1) * limit).populate("userId", "-password").limit(limit);
 
         if (nfts.length > 0) {
             res.status(200).json({ success: true, message: "Nfts fetched successfully", responseResult: nfts })
