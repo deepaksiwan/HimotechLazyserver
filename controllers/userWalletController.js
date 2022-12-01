@@ -9,18 +9,19 @@ const userWalletModel =require("../models/userWalletModel");
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-            const wallet= await userWalletModel.findOne({userId:user._id}).select("wallets").populate("userId").limit(1);
+            const wallet= await userWalletModel.findOne({$and:[{networkName:networkName},{address:address}]});
             if(wallet){
-                const check= await userWalletModel.findOne({$and:[{"wallets.networkName":networkName},{"wallets.address":address}]}).populate("userId")
-                if(check){
-                    res.status(200).json({success:false,message:"This wallet already added by other user"});
-                }else{
-                await userWalletModel.updateOne({_id:wallet._id},{$push:{wallets:req.body}});
-                res.status(200).json({success:true,message:"Wallet Added successfully"})
-                }
+                    res.status(200).json({success:false,message:"This wallet already added "});
             }else{
-            await new userWalletModel({userId:user._id,wallets:req.body}).save();
-            res.status(200).json({success:true,message:"Wallet created successfully"})
+                const obj={
+                    userId:user._id,
+                    networkName:networkName,
+                    address:address,
+                    synced:false,
+                    syncing:false
+                }
+            await new userWalletModel(obj).save();
+            res.status(200).json({success:true,message:"Wallet added successfully"})
             }
         }
         
@@ -36,7 +37,9 @@ const userWalletModel =require("../models/userWalletModel");
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-             const wallets=await  userWalletModel.find({userId:user._id}).select("wallets -_id");
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 6;
+             const wallets=await  userWalletModel.find({userId:user._id}).skip((page - 1) * limit).populate("userId").limit(limit);;
             res.status(200).json({success:true,message:"wallets fetch successfully",responseResult:wallets})
         }
         
@@ -52,12 +55,12 @@ const userWalletModel =require("../models/userWalletModel");
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-            const wallet=await  userWalletModel.findOne({"wallets._id":req.query.id});
+            const wallet=await  userWalletModel.findOne({_id:req.query.id});
             if(wallet){
-               await  userWalletModel.updateOne({"wallets._id":req.query.id},{$pull:{"wallets":{"_id":req.query.id}}},{safe: true});
+               await  userWalletModel.findByIdAndDelete({_id:req.query.id},{ new: true });
                 res.status(200).json({success:true,message:"wallet remove successfully"})
             }else{
-                res.status(404).json({success:true,message:"wallet not found",})
+                res.status(404).json({success:false,message:"wallet not found",})
             }
         }
         
