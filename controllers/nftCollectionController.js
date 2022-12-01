@@ -62,12 +62,12 @@ const addOrUpdateNftCollection = async () => {
 
         } else {
             
-            const userDetail = await Promise.all(users?.map(async (user) => {
+            const userDetail = await Promise.all(users.map(async (user) => {
                
                 const userWallets = await userWalletModel.find({ userId: user._id }).populate("userId");
                 // console.log(userWallets);
                  await nftCollectionModel.findOneAndUpdate({ userId: user._id }, { $set: {exist:false} }, { new: true });
-                const checkNft = await Promise.all(userWallets?.map(async (wallets) => {
+                const checkNft = await Promise.all(userWallets.map(async (wallets) => {
                     // console.log(wallets);
                 const checkSync = await userWalletModel.find({ userId: user._id }).select("syncing");
                 
