@@ -8,6 +8,9 @@ const swaggerJsDoc = require("swagger-jsdoc");
 const profileRouter=require("./routes/profileRouter");
 const userWalletRouter=require('./routes/userWalletRouter');
 const nftCollectionRouter=require('./routes/nftCollectionRouter');
+var cron = require('node-cron');
+const { addOrUpdateNftCollection } = require("./controllers/nftCollectionController");
+const SettingsModel = require("./models/SettingsModel");
 
 const app = express();
 const port = process.env.PORT;
@@ -60,6 +63,42 @@ const options = {
 const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 // swagger API Documentation end
+
+
+cron.schedule('*/1 * * * *', async () => {
+	console.log("cron running");
+
+	addOrUpdateNftCollection()
+
+	// console.log("cron set");
+	// const cron = await SettingsModel.find({ key: "cron" });
+	// console.log(cron);
+    // if(cron.length > 0) {
+	// 	if(!cron[0].running){
+	// 	console.log("Resume Running")
+	// 	await SettingsModel.findOneAndUpdate({ _id: "63874cc9aaedd49682ac4eea" }, { $set: {running:true} }, { new: true });
+
+	// 		await Promise.all(addOrUpdateNftCollection());
+
+	// 		await SettingsModel.findOneAndUpdate({ _id: "63874cc9aaedd49682ac4eea" }, { $set: {running:false} }, { new: true });
+
+	// 	}else{
+	// 		console.log("Already Running")
+
+	// 	}
+
+    // }
+    // else{
+	// 	console.log("Started Running")
+    //     const obj={
+    //        key: "cron",
+    //        running: true
+    //     }
+    //     await new SettingsModel(obj).save();
+	// 	addOrUpdateNftCollection()
+
+    // }
+});
 
 app.listen(port, () => {
   console.log(`Server live at http://localhost:${port}`);

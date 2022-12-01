@@ -1,3 +1,4 @@
+const boolean = require("joi/lib/types/boolean");
 const { timestamp } = require("joi/lib/types/date");
 const mongoose = require("mongoose");
 
@@ -18,6 +19,9 @@ const NftCollectionSchema = mongoose.Schema({
   chainName:{
     type: String,
     required: [true, "Please Enter The chainName of the NFT"],
+  },
+  exist : {
+    type: Boolean,
   },
   metadata:{
     dna:{type: String},

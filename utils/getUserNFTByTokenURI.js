@@ -1,9 +1,9 @@
 const  axios =require("axios");
+require("dotenv").config()
+
 // import ApiConfigs from "../../ApiConfig";
 // import { Buffer } from "buffer";
-// const projectId = "2DU15Knbsv9ZPXdhO7QIrgDdU2l";
-// const projectSecret = "aabc21458c64527ee50fd50f0bb0f3ac";
-// const authorization = "Basic " + btoa(projectId + ":" + projectSecret);
+
 
 const getUserNFTByTokenURI = async (tokenURI) => {
   const tokenUri=tokenURI.replace("ipfs://","https://wizard.infura-ipfs.io/ipfs/")
@@ -13,11 +13,10 @@ const getUserNFTByTokenURI = async (tokenURI) => {
         url:tokenUri, 
         headers : {
           // 'Accept-Encoding': 'application/json'
-          'Origin' : 'http://localhost:5001'
+          'Origin' : process.env.ORIGIN
         }
     });
-    console.log(tokenUri)
-    console.log(data)
+
     return data;
     } catch (error) {
       // console.log(error,"hk");
