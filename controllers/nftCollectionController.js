@@ -62,7 +62,7 @@ const addOrUpdateNftCollection = async () => {
 
         } else {
             
-            const userDetail = await Promise.all(users.map(async (user) => {
+            const userDetail = await Promise.all(users?.map(async (user) => {
                
                 const userWallets = await userWalletModel.find({ userId: user._id }).populate("userId");
                 // console.log(userWallets);
