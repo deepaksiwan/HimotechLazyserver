@@ -11,9 +11,9 @@ const userWalletModel =require("../models/userWalletModel");
         }else{
             const wallet= await userWalletModel.findOne({userId:user._id}).select("wallets").populate("userId").limit(1);
             if(wallet){
-                const check= await userWalletModel.findOne({$and:[{userId:user._id},{"wallets.networkName":networkName},{"wallets.address":address}]}).populate("userId")
+                const check= await userWalletModel.findOne({$and:[{"wallets.networkName":networkName},{"wallets.address":address}]}).populate("userId")
                 if(check){
-                    res.status(200).json({success:false,message:"This wallet already added"});
+                    res.status(200).json({success:false,message:"This wallet already added by other user"});
                 }else{
                 await userWalletModel.updateOne({_id:wallet._id},{$push:{wallets:req.body}});
                 res.status(200).json({success:true,message:"Wallet Added successfully"})
