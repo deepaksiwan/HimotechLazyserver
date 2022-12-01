@@ -11,7 +11,7 @@ const userWalletModel =require("../models/userWalletModel");
         }else{
             const wallet= await userWalletModel.findOne({$and:[{networkName:networkName},{address:address}]});
             if(wallet){
-                    res.status(200).json({success:false,message:"This wallet already added "});
+                    res.status(200).json({success:false,message:"This wallet is already linked with an account."});
             }else{
                 const obj={
                     userId:user._id,
