@@ -237,7 +237,7 @@ const getAllNftCollection = async (req, res) => {
 const getAllNftByChainName = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 6;
+        const limit = parseInt(req.query.limit) || 10;
 
         let _sort = { createdAt: -1 }
         if(req.query.filter == 2) {
@@ -245,9 +245,35 @@ const getAllNftByChainName = async (req, res) => {
 
         }
         else if(req.query.filter == 3) {
-            _sort =  {"likes": -1}
+            _sort =  {likes: -1}
         }
-        const nfts = await nftCollectionModel.find({ chainName: req.query.chainName, status: "SHOW" , exist : true }).sort(_sort).skip((page - 1) * limit).populate("userId", "-password").limit(limit);
+        // const nfts = await nftCollectionModel.find({ chainName: req.query.chainName, status: "SHOW" , exist : true }).sort(_sort).skip((page - 1) * limit).populate("userId", "-password").limit(limit);
+        const nfts =await nftCollectionModel.aggregate([
+            {$match:{chainName: req.query.chainName, status: "SHOW" , exist : true}},
+            {
+                '$set': {
+                  'likes': {
+                    '$size': '$likes'
+                  }, 
+
+                }
+              },
+            {
+                "$sort": _sort
+            },
+            {"$skip":((page - 1) * limit)},
+            {
+                "$limit": limit
+            },
+            // {
+            //     "$lookup": {
+            //         "from": "NftCollection",
+            //         "localField": "userId",
+            //         "foreignField": "Profiles",
+            //         "as": "userId"
+            //     }
+            // }
+        ])
 
         if (nfts.length > 0) {
             res.status(200).json({ success: true, message: "Nfts fetched successfully", responseResult: nfts })
@@ -441,6 +467,14 @@ const mostLikeNft = async (req, res) => {
     try {
         nftCollectionModel.aggregate([
             { $match: { status: "SHOW" } },
+            {
+                '$set': {
+                  'likes': {
+                    '$size': '$likes'
+                  }, 
+
+                }
+              },
             {
                 "$sort": { "likes": -1 }
             },
