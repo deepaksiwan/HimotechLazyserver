@@ -5,7 +5,7 @@ const userWalletModel = require("../models/userWalletModel")
 const ethers = require("ethers");
 const { WOLFPUPS_NFT_address, WOLFPUPS_NFT_address_BSC } = require('../utils/config');
 const WOLFPUPS_NFT_ABI = require("../utils/WOLFPUPS_NFT_ABI.json")
-const provider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/")
+const provider = new ethers.providers.WebSocketProvider("wss://mainnet.infura.io/ws/v3/2f2312e7890d42f5b0ba6e29ef50674d")
 const bscprovider = new ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s3.binance.org:8545")
 const getUserNFTByTokenURI = require("../utils/getUserNFTByTokenURI");
  
