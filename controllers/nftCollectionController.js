@@ -245,14 +245,14 @@ const getAllNftByChainName = async (req, res) => {
 
         }
         else if(req.query.filter == 3) {
-            _sort =  {likes: -1}
+            _sort =  {likesCount: -1}
         }
         // const nfts = await nftCollectionModel.find({ chainName: req.query.chainName, status: "SHOW" , exist : true }).sort(_sort).skip((page - 1) * limit).populate("userId", "-password").limit(limit);
         const nfts =await nftCollectionModel.aggregate([
             {$match:{chainName: req.query.chainName, status: "SHOW" , exist : true}},
             {
                 '$set': {
-                  'likes': {
+                  'likesCount': {
                     '$size': '$likes'
                   }, 
 
