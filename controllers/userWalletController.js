@@ -31,6 +31,20 @@ const userWalletModel =require("../models/userWalletModel");
 
  }
 
+ 
+
+ const syncOffAllWallet=async(req,res)=>{
+    try{
+        await userWalletModel.updateMany({syncing : true}, { $set: { syncing: false } })
+
+        res.status(200).json({success:true,message:"wallets synced off successfully"})
+     
+        
+    }catch(err){
+            res.status(501).json({success:false,message:err})
+    }
+ }
+
  const getAllWallet=async(req,res)=>{
     try{
         const user= await profileModel.findOne({_id: req.userId})
@@ -71,4 +85,4 @@ const userWalletModel =require("../models/userWalletModel");
 
 
 
- module.exports={addWallet,removeWallet,getAllWallet}
+ module.exports={addWallet,removeWallet,getAllWallet,syncOffAllWallet}
