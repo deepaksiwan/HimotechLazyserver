@@ -64,7 +64,7 @@ const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 // swagger API Documentation end
 
-cron.schedule('*/2 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
 	console.log("cron running");
 	addOrUpdateNftCollection() 
 
