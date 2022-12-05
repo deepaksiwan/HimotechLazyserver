@@ -64,11 +64,10 @@ const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 // swagger API Documentation end
 
-
 cron.schedule('*/2 * * * *', async () => {
 	console.log("cron running");
+	addOrUpdateNftCollection() 
 
-	addOrUpdateNftCollection()
 
 	// console.log("cron set");
 	// const cron = await SettingsModel.find({ key: "cron" });
