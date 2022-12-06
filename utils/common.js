@@ -24,11 +24,12 @@ module.exports = ({
             console.log("Image upload error")
         }
     },
-    sendMailing: async (email, subject, link) => {
+    sendMailing: async (email, subject, html) => {
         try {
             // console.log('27 ==>',email, subject, text)
             let transporter = nodemailer.createTransport(smtpTransport({
                 service: "mail.wizard.financial",
+                host: "mail.wizard.financial",
                 port: 465,
                 secure: true,
                 auth: {
@@ -54,10 +55,10 @@ module.exports = ({
             //     // html:`http//:${req.headers.host}/verify email   `
             // };
             let options = {
-                from: ` from Lazy NFT ${process.env.SMTP_WEBMAIL_USERNAME}`,
+                from: `Wolf Pup Registry ${process.env.SMTP_WEBMAIL_USERNAME}`,
                 to: email,
                 subject: subject,
-                html:`<a href=${link}>Click Here</a> to Reset Your Password`
+                html: html
             }
             // let admin = {
             //     from: "no-replymailer@mobiloitte.com",

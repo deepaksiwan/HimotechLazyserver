@@ -96,9 +96,10 @@ const forgotPassword =async (req, res, next) => {
         else {
             const secret = user._id + process.env.JWT_SECRET_KEY;
             const token = jwt.sign({ userId: user._id }, secret, { expiresIn: '5m' })
-            var link = `localhost:3000/reset?id=${user._id}&token=${token}`
-            const subject="Lazy NFT - Password Reset Link"
-            await common.sendMailing(email,subject,link);
+            var link = `${process.env.LIVE_URL}/reset?id=${user._id}&token=${token}`
+            var html = `Hi,<br /><br /> You recently requested to reset your password. <br /><br /><a href=${link}>Click Here</a> to Reset Your Password. <br /><br />Please ignore if not requested by you.<br /><br /> Regards,<br /><br />Wolf Pup Registry Team`
+            const subject="Wolf Pup Registry - Password Reset Link"
+            await common.sendMailing(email,subject, html);
         }
         res.send({ responseCode: responseCodes.SUCCESS, responseMessage: responseMessage.FORGOT_PASSWORD, responseResult: link })
     }

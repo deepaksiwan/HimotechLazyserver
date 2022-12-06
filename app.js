@@ -100,5 +100,5 @@ cron.schedule('*/1 * * * *', async () => {
 });
 
 app.listen(port, () => {
-  console.log(`Server live at http://localhost:${port}`);
+  console.log(`Server live at ${port}`);
 })
