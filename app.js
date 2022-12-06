@@ -52,6 +52,18 @@ const options = {
 			version: "1.0.0",
 			description: "A simple Express Library API",
 		},
+		components: {
+			securitySchemes: {
+				bearerAuth: {
+					type: 'http',
+					scheme: 'bearer',
+					bearerFormat: 'JWT',
+				}
+			}
+		},
+		security: [{
+			bearerAuth: []
+		}],
 		servers: [
 			{
 				url: "http://localhost:5001",
@@ -66,7 +78,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 cron.schedule('*/1 * * * *', async () => {
 	console.log("cron running");
-	addOrUpdateNftCollection() 
+	// addOrUpdateNftCollection() 
 
 
 	// console.log("cron set");

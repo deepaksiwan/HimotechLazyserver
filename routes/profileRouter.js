@@ -1,5 +1,5 @@
-const express =require("express")
-const router=express.Router()
+const express = require("express");
+const router = express.Router();
 const {
   login,
   signup,
@@ -7,48 +7,45 @@ const {
   resetPassword,
   viewProfile,
   editProfile,
-  updateProfilePic
-} =require('../controllers/profileController');
-const {verifyToken}=require('../middleware/auth')
-
+  updateProfilePic,
+} = require("../controllers/profileController");
+const { verifyToken } = require("../middleware/auth");
 
 /**
-* @swagger
-* /api/v1/Profile/signup:
-*   post:
-*     tags:
-*       - Profiles
-*     description: Login
-*     produces:
-*       - application/json
-*     parameters:
-*       - name: email
-*         description: email required.
-*         in: formData
-*         required: true
-*       - name: userName
-*         description: userName required.
-*         in: formData
-*         required: true
-*       - name: password
-*         description: password required.
-*         in: formData
-*         required: true
-*     responses:
-*       200:
-*         description: Thanks, You have successfully signup.
-*       500:
-*         description: Internal Server Error
-*       501:
-*         description: Something went wrong!
-*/
-router.post("/signup",signup)
-
-
-
- /**
  * @swagger
- * /api/v1/Profile/login:
+ * /api/v1/Profile/signup:
+ *   post:
+ *     tags:
+ *       - Profiles
+ *     description: Signup
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: email
+ *         description: email required.
+ *         in: formData
+ *         required: true
+ *       - name: userName
+ *         description: userName required.
+ *         in: formData
+ *         required: true
+ *       - name: password
+ *         description: password required.
+ *         in: formData
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Thanks, You have successfully signup.
+ *       500:
+ *         description: Internal Server Error
+ *       501:
+ *         description: Something went wrong!
+ */
+router.post("/signup", signup);
+
+/**
+ * @swagger
+ * /api/v1/profile/login:
  *   post:
  *     tags:
  *       - Profiles
@@ -56,12 +53,14 @@ router.post("/signup",signup)
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: login
- *         description: login .
- *         in: body
+ *       - name: email
+ *         description: Email required.
+ *         in: formData
  *         required: true
- *         schema:
- *           $ref: '#/definitions/login'
+ *       - name: password
+ *         description: Password required.
+ *         in: formData
+ *         required: true
  *     responses:
  *       200:
  *         description: Thanks, You have successfully Login.
@@ -71,30 +70,72 @@ router.post("/signup",signup)
  *         description: Something went wrong!
  */
 
-router.post('/login',login);
+
+router.post("/login", login);
 
 
-router.post('/forget',forgotPassword);
+/**
+ * @swagger
+ * /api/v1/profile/forget:
+ *   post:
+ *     tags:
+ *       - Profiles
+ *     description: forget password
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: email
+ *         description: Email required.
+ *         in: formData
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Thanks, OTP successfully send on email.
+ *       500:
+ *         description: Internal Server Error
+ *       501:
+ *         description: Something went wrong!
+ */
 
-router.post('/reset',resetPassword);
+router.post("/forget", forgotPassword);
 
+/**
+ * @swagger
+ * /api/v1/profile/reset:
+ *   post:
+ *     tags:
+ *       - Profiles
+ *     description: reset password
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: newPassword
+ *         description: newPassword required.
+ *         in: formData
+ *         required: true
+ *       - name: confirmPassword
+ *         description: confirmPassword required.
+ *         in: formData
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Thanks,Your Password reset successfully.
+ *       500:
+ *         description: Internal Server Error
+ *       501:
+ *         description: Something went wrong!
+ */
+router.post("/reset", resetPassword);
 
 /**
  * @swagger
  * /api/v1/Profile/viewProfile:
  *   get:
- *     security:
- *       - bearerAuth
  *     tags:
  *       - Profiles
  *     description: view profile
  *     produces:
  *       - application/json
- *     parameters:
- *       - name: Authorization
- *         description: Token required.
- *         in: header
- *         required: true
  *     responses:
  *       200:
  *         description: Profile data succesfully  fetched
@@ -103,33 +144,9 @@ router.post('/reset',resetPassword);
  *       501:
  *         description: Something went wrong!
  */
-router.get("/viewProfile",verifyToken,viewProfile);
+router.get("/viewProfile", verifyToken, viewProfile);
 
-// /**
-//  * @swagger
-//  * /api/v1/Profile/create:
-//  *   post:
-//  *     summary: Create a new Profile
-//  *     tags: [Profiles]
-//  *     requestBody:
-//  *       required: true
-//  *       content:
-//  *         application/json:
-//  *           schema:
-//  *             $ref: '#/components/schemas/Profile'
-//  *     responses:
-//  *       201:
-//  *         description: The Profile was successfully created
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               $ref: '#/components/schemas/Profile'
-//  *       500:
-//  *         description: Some server error
-//  *       501:
-//  *         description: Something went wrong!
-//  */
-// router.post("/create",createProfileCollection)
+
 
 /**
  * @swagger
@@ -141,12 +158,8 @@ router.get("/viewProfile",verifyToken,viewProfile);
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: Authorization
- *         description: Authorization required.
- *         in: header
- *         required: true
  *       - name: editProfile
- *         description: profile  edit as per need.
+ *         description: profile edit.
  *         in: body
  *         required: true
  *         schema:
@@ -159,7 +172,34 @@ router.get("/viewProfile",verifyToken,viewProfile);
  *       501:
  *         description: Something went wrong!
  */
-router.put("/editProfile",verifyToken,editProfile);
+router.put("/editProfile", verifyToken, editProfile);
 
-router.put("/updateProfilePic",verifyToken,updateProfilePic);
-module.exports=router
+/**
+ * @swagger
+ * /api/v1/profile/updateProfilePic:
+ *   put:
+ *     tags:
+ *       - Profiles
+ *     description: editProfile
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: updateProfilePic
+ *         description: change profile pic.
+ *         in: formData
+ *         required: true
+ *         schema:
+ *            type: string
+ *            properties:
+ *                profilePic:
+ *                type: string
+ *     responses:
+ *       200:
+ *         description: Profile Edit Successfully.
+ *       500:
+ *         description: Internal Server Error
+ *       501:
+ *         description: Something went wrong!
+ */
+router.put("/updateProfilePic", verifyToken, updateProfilePic);
+module.exports = router;

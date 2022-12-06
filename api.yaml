@@ -4,24 +4,10 @@ definitions:
       type: http
       scheme: JWT
       description: bearer auth
-      name: Authorization
+      name: Profiles
       in: header
     demouser:
       type: bear
-
-  createNotification:
-    required:
-      - title
-    properties:
-      title:
-        type: string
-      description: 
-        type: string
-      notificationType: 
-        type: string
-      image:
-        type: string
-
   register:
     required:
       - userName
@@ -43,41 +29,16 @@ definitions:
         type: string
 
 
-  verifyOtp:
-    required:
-      - email
-      - otp
-    properties:
-      email: 
-        type: string
-      otp: 
-        type: string
-
-  resendOtp:
-    required:
-      - email
-    properties:
-      email: 
-        type: string
-
-  emailOtp:
-    required:
-      - email
-      - userName
-    properties:
-      email: 
-        type: string
-      userName: 
-        type: string
-
   editProfile:
     properties:
-      userName:
-        type: string
-      profilePic: 
-        type: string
       bio: 
         type: string
+      twitterName:
+        type: string
+      facebookName: 
+        type: string
+      personalURL:
+         type: string
   
 
   forgotPassword:
@@ -104,31 +65,8 @@ definitions:
       password: 
         type: string
 
-  addStaticContent:
-    required:
-      - type
-      - title
-      - description
-    properties:
-      type:
-        type: string
-      title: 
-        type: string
-      description: 
-        type: string
 
-  editStaticContent:
-    required:
-      - _id
-      - title
-      - description
-    properties:
-      _id:
-        type: string
-      title: 
-        type: string
-      description: 
-        type: string
+
 
   
   

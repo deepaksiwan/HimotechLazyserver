@@ -623,7 +623,7 @@ const getAllHideNft = async (req, res) => {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
             const nfts = await nftCollectionModel.find({ userId: req.userId, status: "HIDE" }).sort({ createdAt: -1 }).skip((page - 1) * limit).populate("userId", "-password -_id").limit(limit);
-            console.log(nfts);
+            // console.log(nfts);
             if (nfts.length > 0) {
                 res.status(200).json({ success: true, message: "Your Nfts fetched successfully", responseResult: nfts })
             } else {
