@@ -11,7 +11,10 @@ const getUserNFTByTokenURI = async (tokenURI) => {
       const data = await axios({
         method:'GET',
         url:tokenUri, 
-       
+        headers : {
+          'Accept-Encoding': 'application/json'
+          // 'Origin' : process.env.ORIGIN
+        }
     });
 
     return data;

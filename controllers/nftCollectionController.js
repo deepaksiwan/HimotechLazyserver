@@ -63,16 +63,16 @@ const addOrUpdateNftCollection = async () => {
         } else {
             
             const userDetail = await Promise.all(users.map(async (user) => {
+                // console.log(user._id);
                
                 const userWallets = await userWalletModel.find({ userId: user._id }).populate("userId");
-                // console.log(userWallets);
                 let w = 0 
 
                 await Promise.all(userWallets.map(async (wallets) => {
                     // console.log(wallets);
                 const checkSync = await userWalletModel.find({ userId: user._id , address : wallets.address , networkName: wallets.networkName }).select("syncing");
                 w++ ;
-                console.log("data fetched for" , user._id , checkSync )
+                // console.log("data fetched for" , user._id , checkSync )
                 
                 if(!checkSync[0].syncing){
                 console.log("syncing" , user._id , wallets.address )
@@ -108,6 +108,7 @@ const addOrUpdateNftCollection = async () => {
                                     const tokenUri = await contract.tokenURI(tokenId);
                                     // console.log(tokenUri,"tokenUri");
                                     const metadata = await getUserNFTByTokenURI(tokenUri);
+                                    console.log(metadata);
                                     const obj={
                                         userId: wallets.userId._id, 
                                         tokenAddress:WOLFPUPS_NFT_address_BSC,
@@ -153,6 +154,8 @@ const addOrUpdateNftCollection = async () => {
                                 } else {
                                     const tokenUri = await contract.tokenURI(tokenId);
                                     const metadata = await getUserNFTByTokenURI(tokenUri);
+                                console.log(metadata);
+
                                     const obj={
                                         userId: wallets.userId._id, 
                                         tokenAddress:WOLFPUPS_NFT_address,
