@@ -122,7 +122,7 @@ const addOrUpdateNftCollection = async () => {
                                 }
 
                                 if(ac == parseInt(balanceOf)){
-                                    await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet , networkName : "BSC Testnet"}, { $set: {syncing:false,synced: true} }, { new: true });
+                                    await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet.address , networkName : "BSC Testnet"}, { $set: {syncing:false,synced: true} }, { new: true });
                                     console.log("synced", user._id)
 
                                 }
@@ -167,7 +167,7 @@ const addOrUpdateNftCollection = async () => {
 
                                 }
                                 if(ac == parseInt(balanceOf)){
-                                    await userWalletModel.findOneAndUpdate({  userId: user._id, address : _wallet , networkName : "Ethereum"}, { $set: {syncing:false,synced: true} }, { new: true });
+                                    await userWalletModel.findOneAndUpdate({  userId: user._id, address : _wallet.address , networkName : "Ethereum"}, { $set: {syncing:false,synced: true} }, { new: true });
                                     console.log("synced", user._id)
 
                                 }
