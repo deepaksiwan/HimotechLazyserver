@@ -72,6 +72,7 @@ const addOrUpdateNftCollection = async () => {
                     // console.log(wallets);
                 const checkSync = await userWalletModel.find({ userId: user._id , address : wallets.address , networkName: wallets.networkName }).select("syncing");
                 w++ ;
+                console.log("data fetched for" , user._id , checkSync )
                 
                 if(!checkSync[0].syncing){
                 console.log("syncing" , user._id , wallets.address )
