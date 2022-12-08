@@ -6,6 +6,7 @@ const {
   forgotPassword,
   resetPassword,
   viewProfile,
+  getProfileByUserName,
   editProfile,
   updateProfilePic,
 } = require("../controllers/profileController");
@@ -146,6 +147,29 @@ router.post("/reset", resetPassword);
  */
 router.get("/viewProfile", verifyToken, viewProfile);
 
+/**
+ * @swagger
+ * /api/v1/Profile/getProfileByUserName:
+ *   get:
+ *     tags:
+ *       - Profiles
+ *     description: get profile detail by userName
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: userName
+ *         description: get profile detail by userName.
+ *         in: header
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Profile data succesfully  fetched
+ *       404:
+ *         description: The profile is not found
+ *       501:
+ *         description: Something went wrong!
+ */
+router.get("/getProfileByUserName",getProfileByUserName);
 
 
 /**

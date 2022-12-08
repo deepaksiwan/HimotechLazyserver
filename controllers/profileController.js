@@ -146,11 +146,24 @@ const resetPassword=async (req, res, next) => {
 
 const viewProfile=async (req,res)=>{
     try{
-        const data= await ProfileModel.findOne({_id: req.userId}).select("-password -__v")
-        if(!data){
+        const user= await ProfileModel.findOne({_id: req.userId}).select("-password -__v")
+        if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-            res.status(200).json({success:true,message:"succesfully data fetched",data:data})
+            res.status(200).json({success:true,message:"succesfully data fetched",data:user})
+        }
+    }catch(error){
+        res.status(501).json({success:false,message:err})
+    }
+}
+
+const getProfileByUserName=async (req,res)=>{
+    try{
+        const user= await ProfileModel.findOne({userName: req.query.userName}).select("-password -__v")
+        if(!user){
+            res.status(404).json({success:false,message:"Profile not found"})
+        }else{
+            res.status(200).json({success:true,message:"succesfully data fetched",data:user})
         }
     }catch(error){
         res.status(501).json({success:false,message:err})
@@ -160,8 +173,11 @@ const viewProfile=async (req,res)=>{
 
 
 
+
 const editProfile=async(req,res)=>{
     const validationSchema = {
+        email: Joi.string().allow("").optional(),
+        userName: Joi.string().allow("").optional(),
         bio: Joi.string().allow("").optional(),
         twitterName:Joi.string().allow("").optional(),
         facebookName:Joi.string().allow("").optional(),
@@ -173,14 +189,20 @@ const editProfile=async(req,res)=>{
         if(!user){
             res.status(404).json({success:false,message:"Profile not found"})
         }else{
-            const {bio,twitterName,facebookName,personalURL}=validatedBody;
-            if(!bio && !twitterName && !facebookName &&  !personalURL){
+            const {email,userName,bio,twitterName,facebookName,personalURL}=validatedBody;
+            if(!bio &&  !email && !userName && !twitterName && !facebookName &&  !personalURL){
                 res.status(501).json({success:false,message:"No any updated data field"});
             }else{
                 let updateData;
-                if(bio && twitterName && facebookName &&  personalURL){
+                if(email && userName && bio && twitterName && facebookName &&  personalURL){
                     updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},validatedBody,{new:true}).select("-password")
                 }else{
+                    if(email){
+                        updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},{$set:{email:email}},{new:true}).select("-password")
+                    }
+                    if(userName){
+                        updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},{$set:{userName:userName}},{new:true}).select("-password")
+                    }
                     if(bio){
                         updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},{$set:{bio:bio}},{new:true}).select("-password")
                     }
@@ -233,6 +255,7 @@ module.exports={
     forgotPassword,
     resetPassword,
     viewProfile,
+    getProfileByUserName,
     editProfile,
     updateProfilePic
 }

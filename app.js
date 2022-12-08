@@ -78,7 +78,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 cron.schedule('*/1 * * * *', async () => {
 	console.log("cron running");
-	addOrUpdateNftCollection() 
+	// addOrUpdateNftCollection() 
 
 
 	// console.log("cron set");
