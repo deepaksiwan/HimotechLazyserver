@@ -195,7 +195,24 @@ const editProfile=async(req,res)=>{
             }else{
                 let updateData;
                 if(email && userName && bio && twitterName && facebookName &&  personalURL){
-                    updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},validatedBody,{new:true}).select("-password")
+                    let checkEmail = await ProfileModel.findOne({ $and: [{email : email, _id : {$ne :user._id} }]});
+                    // console.log("herreeeeeeeeeeeeeeeeeeherreeeeeeeeeeeeeeeeeeherreeeeeeeeeeeeeeeeeeherreeeeeeeeeeeeeeeeee")
+                    let checkUserName = await ProfileModel.findOne({ $and: [{userName : userName, _id : {$ne :user._id} }]});
+                    // console.log(checkUserName)
+                    if(checkEmail){
+                         res.status(201).json({success:false,message:"user with email already exists"});
+                    }
+                    else  if(checkUserName){
+                        res.status(201).json({success:false,message:"user with username already exists"});
+                   } 
+                    else{
+
+                        updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},validatedBody,{new:true}).select("-password");
+                     
+                            res.status(200).json({success:true,message:"updated successfully",data:updateData})
+                       
+                    }
+
                 }else{
                     if(email){
                         updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},{$set:{email:email}},{new:true}).select("-password")
@@ -214,13 +231,14 @@ const editProfile=async(req,res)=>{
                     }if (personalURL) {
                         updateData= await ProfileModel.findByIdAndUpdate({_id: user._id},{$set:{personalURL:personalURL}},{new:true}).select("-password")
                     }
+                    if(updateData){
+                        res.status(200).json({success:true,message:"updated successfully",data:updateData})
+                    }else{
+                        res.status(501).json({success:false,message:"something went wrong"})
+                    }
                 }
     
-                if(updateData){
-                    res.status(200).json({success:true,message:"updated successfully",data:updateData})
-                }else{
-                    res.status(501).json({success:false,message:"something went wrong"})
-                }
+              
             }
    
         }
