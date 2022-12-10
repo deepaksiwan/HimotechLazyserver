@@ -98,11 +98,11 @@ const addOrUpdateNftCollection = async () => {
                               
                                 // console.log(metadata.data);
                                 // entry in db
-                                const nft = await nftCollectionModel.find({ $and: [{ userId: wallets.userId._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }] }).populate("userId")
+                                const nft = await nftCollectionModel.find({ $and: [{ userId: user._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }] }).populate("userId")
                                 if (nft.length > 0) {
                                     // console.log("This nft already added");
                                 console.log("Excluded:", i);
-                                  await nftCollectionModel.findOneAndUpdate({ $and: [{ userId: wallets.userId._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }]}, { $set: {exist:true} }, { new: true });
+                                  await nftCollectionModel.findOneAndUpdate({ $and: [{ userId: user._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }]}, { $set: {exist:true} }, { new: true });
 
                                 } else {
                                     const tokenUri = await contract.tokenURI(tokenId);
@@ -110,7 +110,7 @@ const addOrUpdateNftCollection = async () => {
                                     const metadata = await getUserNFTByTokenURI(tokenUri);
                                     console.log(metadata);
                                     const obj={
-                                        userId: wallets.userId._id, 
+                                        userId: user._id, 
                                         tokenAddress:WOLFPUPS_NFT_address_BSC,
                                         tokenId:tokenId,
                                         tokenOwner:_wallet.address,
@@ -143,12 +143,12 @@ const addOrUpdateNftCollection = async () => {
                                 // entry in db
                                       
                                 // console.log(metadata)
-                                const nft = await nftCollectionModel.find({ $and: [{ userId: wallets.userId._id }, { tokenAddress: WOLFPUPS_NFT_address}, { tokenId: tokenId }] }).populate("userId")
+                                const nft = await nftCollectionModel.find({ $and: [{ userId: user._id }, { tokenAddress: WOLFPUPS_NFT_address}, { tokenId: tokenId }] }).populate("userId")
                                 if (nft.length > 0) {
                                     // console.log("This nft already added");
                                     console.log("Excluded:", i);
 
-                                    await nftCollectionModel.findOneAndUpdate({ $and: [{ userId: wallets.userId._id }, { tokenAddress: WOLFPUPS_NFT_address}, { tokenId: tokenId }]}, { $set: {exist:true} }, { new: true });
+                                    await nftCollectionModel.findOneAndUpdate({ $and: [{ userId: user._id }, { tokenAddress: WOLFPUPS_NFT_address}, { tokenId: tokenId }]}, { $set: {exist:true} }, { new: true });
 
 
                                 } else {
@@ -157,7 +157,7 @@ const addOrUpdateNftCollection = async () => {
                                 console.log(metadata);
 
                                     const obj={
-                                        userId: wallets.userId._id, 
+                                        userId: user._id, 
                                         tokenAddress:WOLFPUPS_NFT_address,
                                         tokenId:tokenId,
                                         tokenOwner:_wallet.address,
