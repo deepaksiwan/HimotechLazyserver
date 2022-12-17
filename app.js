@@ -11,6 +11,7 @@ const nftCollectionRouter=require('./routes/nftCollectionRouter');
 var cron = require('node-cron');
 const { addOrUpdateNftCollection } = require("./controllers/nftCollectionController");
 const SettingsModel = require("./models/SettingsModel");
+const { syncOffAllWallet } = require("./controllers/userWalletController");
 
 const app = express();
 const port = process.env.PORT;
@@ -76,10 +77,15 @@ const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 // swagger API Documentation end
 
+cron.schedule('* * */1 * *', async () => {
+	console.log("cron 2 running");
+	a 
+	syncOffAllWallet()
+})
+
 cron.schedule('*/1 * * * *', async () => {
 	console.log("cron running");
 	addOrUpdateNftCollection() 
-
 
 	// console.log("cron set");
 	// const cron = await SettingsModel.find({ key: "cron" });
