@@ -77,15 +77,19 @@ const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 // swagger API Documentation end
 
-cron.schedule('* */6 * * *', async () => {
-	console.log("cron 2 running");
+// cron.schedule('* */6 * * *', async () => {
+// 	console.log("cron 2 running");
 
-	syncOffAllWallet()
-})
+// 	// syncOffAllWallet()
+// })
 
-cron.schedule('*/1 * * * *', async () => {
+// setTimeout(() => {
+	
+// }, 10000);
+
+cron.schedule('*/10 * * * *', async () => {
 	console.log("cron running");
-	// addOrUpdateNftCollection() 
+	addOrUpdateNftCollection() 
 
 	// console.log("cron set");
 	// const cron = await SettingsModel.find({ key: "cron" });

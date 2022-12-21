@@ -1,6 +1,7 @@
  const { default: mongoose } = require("mongoose");
 const profileModel = require("../models/profileModel");
 const userWalletModel =require("../models/userWalletModel");
+const { addOrUpdateNftCollectionUser } = require("./nftCollectionController");
 
  const addWallet=async (req,res)=>{
     try{
@@ -21,6 +22,7 @@ const userWalletModel =require("../models/userWalletModel");
                     syncing:false
                 }
             await new userWalletModel(obj).save();
+            addOrUpdateNftCollectionUser(user._id);
             res.status(200).json({success:true,message:"Wallet added successfully"})
             }
         }
@@ -33,15 +35,17 @@ const userWalletModel =require("../models/userWalletModel");
 
  
 
- const syncOffAllWallet=async(req,res)=>{
+ const syncOffAllWallet=async()=>{
     try{
         await userWalletModel.updateMany({syncing : true}, { $set: { syncing: false } })
 
-        res.status(200).json({success:true,message:"wallets synced off successfully"})
-     
+        // res.status(200).json({success:true,message:"wallets synced off successfully"})
+        return true
         
     }catch(err){
-            res.status(501).json({success:false,message:err})
+            // res.status(501).json({success:false,message:err})
+        return false
+
     }
  }
 
