@@ -858,5 +858,7 @@ module.exports = {
     getAllHideNft,
     pinnedToggleNft,
     getAllPinnedNftByUserName,
-    getAllNftByUserName
+    getAllNftByUserName,
+   addOrUpdateNftCollectionUser
+
 }
