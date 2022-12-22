@@ -200,6 +200,7 @@ const addOrUpdateNftCollectionUser = async (_userId) => {
 const addOrUpdateNftCollection = async () => {
     // console.log("hi");
      
+    // await userWalletModel.updateMany({syncing : true}, { $set: { syncing: false } })
  
 
     try {
@@ -217,16 +218,16 @@ const addOrUpdateNftCollection = async () => {
             const userDetail = await Promise.all(users.map(async (user) => {
                 // console.log(user._id);
                
-                const userWallets = await userWalletModel.find({ userId: user._id }).populate("userId");
+                const userWallets = await userWalletModel.find({ userId: user._id ,syncing : false }).populate("userId");
                 let w = 0 
 
                 await Promise.all(userWallets.map(async (wallets) => {
                     // console.log(wallets);
-                const checkSync = await userWalletModel.find({ userId: user._id , address : wallets.address , networkName: wallets.networkName }).select("syncing");
+                // const checkSync = await userWalletModel.find({ userId: user._id , address : wallets.address , networkName: wallets.networkName }).select("syncing");
                 w++ ;
                 // console.log("data fetched for" , user._id , checkSync )
                 
-                if(!checkSync[0].syncing){
+                // if(!checkSync[0].syncing){
                 console.log("syncing" , user._id , wallets.address )
 
                 await userWalletModel.findOneAndUpdate({  userId: user._id , address : wallets.address , networkName: wallets.networkName }, { $set: {syncing:true,synced: false} }, { new: true });
@@ -236,54 +237,63 @@ const addOrUpdateNftCollection = async () => {
                         // console.log(wallets[i]);
                         let _wallet = wallets;
                         if (_wallet.networkName === "BSC Testnet") {
-                            const contract = getContract(WOLFPUPS_NFT_address_BSC, WOLFPUPS_NFT_ABI, bscprovider);
-                            // console.log(contract);
-                            const balanceOf = await contract.balanceOf(_wallet.address);
-                            console.log(parseInt(balanceOf),"ggg");
-                            let ac = 0 ;
 
-                            for (let i = 0; i < parseInt(balanceOf); i++) {
-                                ac++
-
-                                const tokenId = await contract.tokenOfOwnerByIndex(_wallet.address, i);
-                                // console.log(tokenId.toString(),"tokenId");
-                              
-                                // console.log(metadata.data);
-                                // entry in db
-                                const nft = await nftCollectionModel.find({ $and: [{ userId: user._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }] }).populate("userId")
-                                if (nft.length > 0) {
-                                    // console.log("This nft already added");
-                                console.log("Excluded:", i);
-                                  await nftCollectionModel.findOneAndUpdate({ $and: [{ userId: user._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }]}, { $set: {exist:true} }, { new: true });
-
-                                } else {
-                                    const tokenUri = await contract.tokenURI(tokenId);
-                                    // console.log(tokenUri,"tokenUri");
-                                    const metadata = await getUserNFTByTokenURI(tokenUri);
-                                    console.log(metadata);
-                                    const obj={
-                                        userId: user._id, 
-                                        tokenAddress:WOLFPUPS_NFT_address_BSC,
-                                        tokenId:tokenId,
-                                        tokenOwner:_wallet.address,
-                                        chainName:_wallet.networkName,
-                                        exist : true,
-                                        metadata: metadata.data
+                            try{
+                                const contract = getContract(WOLFPUPS_NFT_address_BSC, WOLFPUPS_NFT_ABI, bscprovider);
+                                // console.log(contract);
+                                const balanceOf = await contract.balanceOf(_wallet.address);
+                                console.log(parseInt(balanceOf),"ggg");
+                                let ac = 0 ;
+    
+                                for (let i = 0; i < parseInt(balanceOf); i++) {
+                                    ac++
+    
+                                    const tokenId = await contract.tokenOfOwnerByIndex(_wallet.address, i);
+                                    // console.log(tokenId.toString(),"tokenId");
+                                  
+                                    // console.log(metadata.data);
+                                    // entry in db
+                                    const nft = await nftCollectionModel.find({ $and: [{ userId: user._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }] }).populate("userId")
+                                    if (nft.length > 0) {
+                                        // console.log("This nft already added");
+                                    console.log("Excluded:", i);
+                                      await nftCollectionModel.findOneAndUpdate({ $and: [{ userId: user._id }, { tokenAddress: WOLFPUPS_NFT_address_BSC}, { tokenId: tokenId }]}, { $set: {exist:true} }, { new: true });
+    
+                                    } else {
+                                        const tokenUri = await contract.tokenURI(tokenId);
+                                        // console.log(tokenUri,"tokenUri");
+                                        const metadata = await getUserNFTByTokenURI(tokenUri);
+                                        console.log(metadata);
+                                        const obj={
+                                            userId: user._id, 
+                                            tokenAddress:WOLFPUPS_NFT_address_BSC,
+                                            tokenId:tokenId,
+                                            tokenOwner:_wallet.address,
+                                            chainName:_wallet.networkName,
+                                            exist : true,
+                                            metadata: metadata.data
+                                        }
+                                        await new nftCollectionModel(obj).save();
+                                        console.log(i);
+    
                                     }
-                                    await new nftCollectionModel(obj).save();
-                                    console.log(i);
-
-                                }
-
-                                if(ac == parseInt(balanceOf)){
-                                    await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet.address , networkName : "BSC Testnet"}, { $set: {syncing:false,synced: true} }, { new: true });
-                                    console.log("synced", user._id)
-
+    
+                                    if(ac == parseInt(balanceOf)){
+                                        await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet.address , networkName : "BSC Testnet"}, { $set: {syncing:false,synced: true} }, { new: true });
+                                        console.log("synced", user._id)
+    
+                                    }
                                 }
                             }
+                           catch{
+                            await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet.address , networkName : "BSC Testnet"}, { $set: {syncing:false,synced: true} }, { new: true });
+                              }
+                            
 
                         }
                         if (_wallet.networkName === "Ethereum") {
+
+                            try{
                             const contract = getContract(WOLFPUPS_NFT_address, WOLFPUPS_NFT_ABI, provider);
 
                             const balanceOf = await contract.balanceOf(_wallet.address);
@@ -329,10 +339,14 @@ const addOrUpdateNftCollection = async () => {
                                 }
                             }
                         }
+                        catch{
+                         await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet.address , networkName : "BSC Testnet"}, { $set: {syncing:false,synced: true} }, { new: true });
+                           }
+                        }
 
                         
 
-                }
+                // }
 
                 }))
 
