@@ -247,7 +247,7 @@ const addOrUpdateNftCollection = async () => {
     
                                 for (let i = 0; i < parseInt(balanceOf); i++) {
                                     ac++
-    
+                                    
                                     const tokenId = await contract.tokenOfOwnerByIndex(_wallet.address, i);
                                     // console.log(tokenId.toString(),"tokenId");
                                   
