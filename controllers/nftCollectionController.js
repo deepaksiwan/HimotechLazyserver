@@ -247,7 +247,7 @@ const addOrUpdateNftCollection = async () => {
     
                                 for (let i = 0; i < parseInt(balanceOf); i++) {
                                     ac++
-                                    
+                                    try{
                                     const tokenId = await contract.tokenOfOwnerByIndex(_wallet.address, i);
                                     // console.log(tokenId.toString(),"tokenId");
                                   
@@ -284,6 +284,10 @@ const addOrUpdateNftCollection = async () => {
     
                                     }
                                 }
+                                    catch{
+                                        await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet.address , networkName : "BSC Testnet"}, { $set: {syncing:false,synced: true} }, { new: true });
+                                          }
+                                }
                             }
                            catch{
                             await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet.address , networkName : "BSC Testnet"}, { $set: {syncing:false,synced: true} }, { new: true });
@@ -300,6 +304,7 @@ const addOrUpdateNftCollection = async () => {
                             let ac= 0;
                             for (let i = 0; i < parseInt(balanceOf); i++) {
                                 ac++
+                                 try{
                                 const tokenId = await contract.tokenOfOwnerByIndex(_wallet.address, i);
                            
                                 // entry in db
@@ -338,9 +343,13 @@ const addOrUpdateNftCollection = async () => {
 
                                 }
                             }
+                            catch{
+                                await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet.address , networkName : "Ethereum"}, { $set: {syncing:false,synced: true} }, { new: true });
+                                  }
+                        }
                         }
                         catch{
-                         await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet.address , networkName : "BSC Testnet"}, { $set: {syncing:false,synced: true} }, { new: true });
+                         await userWalletModel.findOneAndUpdate({  userId: user._id , address : _wallet.address , networkName : "Ethereum"}, { $set: {syncing:false,synced: true} }, { new: true });
                            }
                         }
 

@@ -77,11 +77,11 @@ const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 // swagger API Documentation end
 
-// cron.schedule('* */6 * * *', async () => {
-// 	console.log("cron 2 running");
+cron.schedule('*/9 * * * *', async () => {
+	console.log("cron 2 running");
 
-// 	// syncOffAllWallet()
-// })
+	syncOffAllWallet()
+})
 
 // setTimeout(() => {
 	
