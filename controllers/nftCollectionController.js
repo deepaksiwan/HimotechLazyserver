@@ -46,6 +46,135 @@ const getContract = (contractAddress, contractAbi, signerOrProvider) => {
 // save meta data after checking of entry if already exist then update. (token address , id, wallet and network)
 
 
+const getStats =  async (req,res) => {
+    try{
+
+    const profiles = await profileModel.find();
+    const wallets = await userWalletModel.find();
+    const nfts = await nftCollectionModel.find();
+    const nftsNamed = await nftCollectionModel.find({lazyName : {$ne : ""} });
+
+    res.status(200).json({ success: true, count : {profiles : profiles.length ,wallets : wallets.length, nfts: nfts.length , nftsNamed : nftsNamed.length} ,  message: "Found Result" })
+}
+catch(e){
+    res.status(200).json({ success: true, count : {profiles : 0 ,wallets : 0 , nfts: 0 , nftsNamed: 0 } , message: "Not Found Result"})
+
+}
+
+
+}
+
+const checkMasterCollector =  async (req,res) => {
+    // const userWallets = await userWalletModel.find({ userId: user._id ,syncing : false }).populate("userId");
+
+    try {
+        // const getAllback = await nftCollectionModel.find({ attributes: {$elemMatch : { trait_type: "Back" ,value: "Grey" } } });
+        // console.log(getAllback.length)
+        console.log(req.query)
+
+        let _userName = req.query.userName
+        const userId = await profileModel.findOne({userName: _userName}).select("_id");
+        console.log(userId)
+        const getNfts = await nftCollectionModel.find({   "userId": userId._id });
+        let backAttr = ["wood" , "earth" , "metal" , "water" , "fire"]; 
+        let backAttrFound = []
+        getNfts.map((v,i) => {
+            // console.log(v.metadata)
+            let _elm = v.metadata.attributes[0].value.toString();
+            _elm = _elm.replace("Light " , "");
+            _elm = _elm.replace("Medium " , "");
+            _elm = _elm.replace("Dark " , "");
+            // console.log(_elm)
+            _elm = _elm.toLowerCase();
+            if(!backAttrFound.includes(_elm)){
+                backAttrFound.push(_elm);
+            }
+        })
+
+        if(backAttrFound.length == backAttr.length){
+            res.status(200).json({ success: true, isMaster : true ,  message: "Found Result: "+backAttrFound.length, responseResult: backAttrFound })
+
+        }
+        else{
+          
+                res.status(200).json({ success: true, isMaster : false , message: "Not Found Result: "+backAttrFound.length, responseResult: backAttrFound })
+    
+       
+        }
+
+        
+
+
+    }
+    catch(e){
+        res.status(500).json({ success: false, isMaster : false , message: "Query Error", responseResult: e })
+
+    }
+
+    
+
+}
+
+
+
+const checkGrandMasterCollector =  async (req,res) => {
+    // const userWallets = await userWalletModel.find({ userId: user._id ,syncing : false }).populate("userId");
+
+    try {
+        // const getAllback = await nftCollectionModel.find({ attributes: {$elemMatch : { trait_type: "Back" ,value: "Grey" } } });
+        // console.log(getAllback.length)
+
+        let _userName = req.query.userName
+        const userId = await profileModel.findOne({userName: _userName}).select("_id");
+        console.log(req.body)
+        const getNfts = await nftCollectionModel.find({   "userId": userId._id });
+        let backAttr = ["wood" , "earth" , "metal" , "water" , "fire"]; 
+
+        let backAttrFound = []
+        let greyBack = [] ; 
+        getNfts.map((v,i) => {
+            // console.log(v.metadata)
+            let _elm = v.metadata.attributes[0].value.toString();
+            _elm = _elm.replace("Light " , "");
+            _elm = _elm.replace("Medium " , "");
+            _elm = _elm.replace("Dark " , "");
+            // console.log(_elm)
+            _elm = _elm.toLowerCase();
+           
+            if(!backAttrFound.includes(_elm)){
+                backAttrFound.push(_elm);
+            }
+            if(!greyBack.includes(_elm)){
+                if(v.metadata.attributes[1].value == "Grey" || v.metadata.attributes[1].value == "grey"){
+                    greyBack.push(_elm);
+                }
+            }
+        })
+
+        if(greyBack.length == backAttr.length){
+            res.status(200).json({ success: true, isGrandMaster : true , message: "Found Result: "+greyBack.length, responseResult: greyBack })
+
+        }
+        else{
+          
+                res.status(200).json({ success: true,isGrandMaster : false , message: "Not Found Result: "+greyBack.length, responseResult: greyBack })
+    
+       
+        }
+
+        
+
+
+    }
+    catch(e){
+        res.status(500).json({ success: false,isGrandMaster : false , message: "Query Error", responseResult: e })
+
+    }
+
+    
+
+}
+
 
 const addOrUpdateNftCollectionUser = async (_userId) => {
     // console.log("hi");
@@ -882,6 +1011,9 @@ module.exports = {
     pinnedToggleNft,
     getAllPinnedNftByUserName,
     getAllNftByUserName,
-   addOrUpdateNftCollectionUser
+   addOrUpdateNftCollectionUser,
+   checkMasterCollector,
+   checkGrandMasterCollector,
+   getStats
 
 }

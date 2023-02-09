@@ -16,9 +16,17 @@ const {
     getAllHideNft,
     pinnedToggleNft,
     getAllPinnedNftByUserName,
-    getAllNftByUserName
+    getAllNftByUserName,
+    checkMasterCollector,
+    checkGrandMasterCollector,
+    getStats
 } =require('../controllers/nftCollectionController');
 const {verifyToken}=require('../middleware/auth');
+
+router.get("/checkmaster",checkMasterCollector);
+router.get("/stats",getStats);
+
+router.get("/checkgrandmaster",checkGrandMasterCollector);
 
 router.get("/addOrUpdate",addOrUpdateNftCollection);
 
