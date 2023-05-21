@@ -15,6 +15,8 @@ const { syncOffAllWallet } = require("./controllers/userWalletController");
 
 const app = express();
 const port = process.env.PORT;
+
+console.log(port)
 const DATABASE_URL = process.env.DATABASE_URL;
 
 // CORS Policy

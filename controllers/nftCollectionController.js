@@ -522,12 +522,12 @@ const addOrUpdateNftCollection = async () => {
 //             res.status(501).json({success:false,message:err})
 //     }
 
-//  }
 
 const getAllNftCollection = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
+        console.log("limit", limit)
 
         const nfts = await nftCollectionModel.find({ status: "SHOW" , exist : true }).sort({ createdAt: -1 }).skip((page - 1) * limit).populate("userId", "-password").limit(limit);
 
@@ -546,6 +546,7 @@ const getAllNftByChainName = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
+        console.log("limit", limit)
 
         let _sort = { createdAt: -1 }
         if(req.query.filter == 2) {
@@ -555,35 +556,37 @@ const getAllNftByChainName = async (req, res) => {
         else if(req.query.filter == 3) {
             _sort =  {likesCount: -1}
         }
-        // const nfts = await nftCollectionModel.find({ chainName: req.query.chainName, status: "SHOW" , exist : true }).sort(_sort).skip((page - 1) * limit).populate("userId", "-password").limit(limit);
-        const nfts =await nftCollectionModel.aggregate([
-            {$match:{chainName: req.query.chainName, status: "SHOW" , exist : true}},
-            {
-                '$set': {
-                  'likesCount': {
-                    '$size': '$likes'
-                  }, 
+         const nfts = await nftCollectionModel.find({ chainName: req.query.chainName, status: "SHOW" , exist : true }).sort(_sort).skip((page - 1) * limit).populate("userId", "-password").limit(limit);
+         
+        // const nfts =await nftCollectionModel.aggregate([
+        //     {$match:{chainName: req.query.chainName, status: "SHOW" , exist : true}},
+        //     {
+        //         '$set': {
+        //           'likesCount': {
+        //             '$size': '$likes'
+        //           }, 
 
-                }
-              },
-            {
-                "$sort": _sort
-            },
-            {"$skip":((page - 1) * limit)},
-            {
-                "$limit": limit
-            },
-            // {
-            //     "$lookup": {
-            //         "from": "NftCollection",
-            //         "localField": "userId",
-            //         "foreignField": "Profiles",
-            //         "as": "userId"
-            //     }
-            // }
-        ])
+        //         }
+        //       },
+        //     {
+        //         "$sort": _sort
+        //     },
+        //     {"$skip":((page - 1) * limit)},
+        //     {
+        //         "$limit": limit
+        //     },
+        //     // {
+        //     //     "$lookup": {
+        //     //         "from": "NftCollection",
+        //     //         "localField": "userId",
+        //     //         "foreignField": "Profiles",
+        //     //         "as": "userId"
+        //     //     }
+        //     // }
+        // ])
 
         if (nfts.length > 0) {
+            console.log("nft", nft)
             res.status(200).json({ success: true, message: "Nfts fetched successfully", responseResult: nfts })
         } else {
             res.status(404).json({ success: true, message: "nft not found" })
